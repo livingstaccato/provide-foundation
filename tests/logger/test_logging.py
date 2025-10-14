@@ -285,3 +285,50 @@ class TestFactoriesModule(FoundationTestCase):
 
         output = captured_stderr_for_foundation.getvalue()
         assert "Test debug message from factory" in output
+
+    def test_bind_unbind(
+        self,
+        setup_foundation_telemetry_for_test: callable,
+        captured_stderr_for_foundation: "io.StringIO",
+    ) -> None:
+        """Test that bind and unbind methods work correctly."""
+        config = TelemetryConfig(
+            logging=LoggingConfig(
+                default_level="INFO",
+                console_formatter="key_value",
+            ),
+        )
+        setup_foundation_telemetry_for_test(config)
+
+        logger = global_logger.bind(user_id="user_123")
+        logger.info("User action")
+
+        output = captured_stderr_for_foundation.getvalue()
+        assert "user_id=user_123" in output
+
+        logger = logger.unbind("user_id")
+        logger.info("Another action")
+
+        output = captured_stderr_for_foundation.getvalue()
+        assert "user_id=user_123" not in output
+
+    def test_try_unbind(
+        self,
+        setup_foundation_telemetry_for_test: callable,
+        captured_stderr_for_foundation: "io.StringIO",
+    ) -> None:
+        """Test that try_unbind method works correctly."""
+        config = TelemetryConfig(
+            logging=LoggingConfig(
+                default_level="INFO",
+                console_formatter="key_value",
+            ),
+        )
+        setup_foundation_telemetry_for_test(config)
+
+        logger = global_logger.bind(user_id="user_123")
+        logger = logger.try_unbind("user_id", "nonexistent_key")
+        logger.info("User action")
+
+        output = captured_stderr_for_foundation.getvalue()
+        assert "user_id=user_123" not in output

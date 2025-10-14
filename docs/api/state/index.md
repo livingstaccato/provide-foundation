@@ -7,9 +7,15 @@ The `provide.foundation.state` module provides utilities for managing state in y
 The `base` module provides the core components for state management, including an immutable state object, a state machine, and a state manager.
 
 ::: provide.foundation.state.base
+    options:
+      show_root_heading: true
+      show_source: false
 
 ## Config
 
 The `config` module provides a state manager for configuration objects.
 
 ::: provide.foundation.state.config
+    options:
+      show_root_heading: true
+      show_source: false
