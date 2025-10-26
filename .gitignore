@@ -398,3 +398,5 @@ site
 .claude
 ai_studio_code.sh
 .documentation
+analyzer_output/
+analyzer_cache/
