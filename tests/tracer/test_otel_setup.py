@@ -297,6 +297,7 @@ class TestGetOtelTracer(FoundationTestCase):
             patch("provide.foundation.tracer.otel._HAS_OTEL", True),
             patch("provide.foundation.tracer.otel.otel_trace") as mock_trace,
         ):
+            mock_trace.get_tracer.return_value = mock_tracer
             result = get_otel_tracer("test-tracer")
 
             assert result == mock_tracer
