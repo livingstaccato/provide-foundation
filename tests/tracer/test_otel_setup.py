@@ -1,8 +1,4 @@
-# 
-# SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
-# SPDX-License-Identifier: Apache-2.0
-#
-"""Comprehensive tests for tracer/otel.py module."""
+from typing import Any
 
 from provide.testkit import FoundationTestCase
 from provide.testkit.mocking import Mock, patch
@@ -37,7 +33,7 @@ class TestRequireOtel(FoundationTestCase):
 class TestSetupOpentelemetryTracing(FoundationTestCase):
     """Test setup_opentelemetry_tracing function."""
 
-    def create_mock_config(self, **kwargs) -> Mock:
+    def create_mock_config(self, **kwargs: Any) -> Mock:
         """Create a mock TelemetryConfig with defaults."""
         defaults = {
             "tracing_enabled": True,
@@ -190,18 +186,16 @@ class TestSetupOpentelemetryTracing(FoundationTestCase):
         mock_exporter = Mock()
         mock_processor = Mock()
 
-        with patch("provide.foundation.tracer.otel._HAS_OTEL", True):
-            with patch("provide.foundation.tracer.otel.Resource") as mock_resource_class:
-                with patch("provide.foundation.tracer.otel.TraceIdRatioBased") as mock_sampler_class:
-                    with patch("provide.foundation.tracer.otel.TracerProvider") as mock_provider_class:
-                        with patch(
-                            "provide.foundation.tracer.otel.OTLPHttpSpanExporter"
-                        ) as mock_exporter_class:
-                            with patch(
-                                "provide.foundation.tracer.otel.BatchSpanProcessor"
-                            ) as mock_processor_class:
-                                with patch("provide.foundation.tracer.otel.otel_trace"):
-                                    with patch("provide.foundation.tracer.otel.slog") as mock_log:
+        with (
+            patch("provide.foundation.tracer.otel._HAS_OTEL", True),
+            patch("provide.foundation.tracer.otel.Resource") as mock_resource_class,
+            patch("provide.foundation.tracer.otel.TraceIdRatioBased") as mock_sampler_class,
+            patch("provide.foundation.tracer.otel.TracerProvider") as mock_provider_class,
+            patch("provide.foundation.tracer.otel.OTLPHttpSpanExporter") as mock_exporter_class,
+            patch("provide.foundation.tracer.otel.BatchSpanProcessor") as mock_processor_class,
+            patch("provide.foundation.tracer.otel.otel_trace"),
+            patch("provide.foundation.tracer.otel.slog") as mock_log,
+        ):
                                         mock_resource_class.create.return_value = mock_resource
                                         mock_sampler_class.return_value = mock_sampler
                                         mock_provider_class.return_value = mock_tracer_provider
@@ -235,18 +229,16 @@ class TestSetupOpentelemetryTracing(FoundationTestCase):
         mock_exporter = Mock()
         mock_processor = Mock()
 
-        with patch("provide.foundation.tracer.otel._HAS_OTEL", True):
-            with patch("provide.foundation.tracer.otel.Resource") as mock_resource_class:
-                with patch("provide.foundation.tracer.otel.TraceIdRatioBased") as mock_sampler_class:
-                    with patch("provide.foundation.tracer.otel.TracerProvider") as mock_provider_class:
-                        with patch(
-                            "provide.foundation.tracer.otel.OTLPHttpSpanExporter"
-                        ) as mock_exporter_class:
-                            with patch(
-                                "provide.foundation.tracer.otel.BatchSpanProcessor"
-                            ) as mock_processor_class:
-                                with patch("provide.foundation.tracer.otel.otel_trace"):
-                                    with patch("provide.foundation.tracer.otel.slog"):
+        with (
+            patch("provide.foundation.tracer.otel._HAS_OTEL", True),
+            patch("provide.foundation.tracer.otel.Resource") as mock_resource_class,
+            patch("provide.foundation.tracer.otel.TraceIdRatioBased") as mock_sampler_class,
+            patch("provide.foundation.tracer.otel.TracerProvider") as mock_provider_class,
+            patch("provide.foundation.tracer.otel.OTLPHttpSpanExporter") as mock_exporter_class,
+            patch("provide.foundation.tracer.otel.BatchSpanProcessor") as mock_processor_class,
+            patch("provide.foundation.tracer.otel.otel_trace"),
+            patch("provide.foundation.tracer.otel.slog"),
+        ):
                                         mock_resource_class.create.return_value = mock_resource
                                         mock_sampler_class.return_value = mock_sampler
                                         mock_provider_class.return_value = mock_tracer_provider
@@ -272,12 +264,14 @@ class TestSetupOpentelemetryTracing(FoundationTestCase):
         mock_sampler = Mock()
         mock_tracer_provider = Mock()
 
-        with patch("provide.foundation.tracer.otel._HAS_OTEL", True):
-            with patch("provide.foundation.tracer.otel.Resource") as mock_resource_class:
-                with patch("provide.foundation.tracer.otel.TraceIdRatioBased") as mock_sampler_class:
-                    with patch("provide.foundation.tracer.otel.TracerProvider") as mock_provider_class:
-                        with patch("provide.foundation.tracer.otel.otel_trace"):
-                            with patch("provide.foundation.tracer.otel.slog"):
+        with (
+            patch("provide.foundation.tracer.otel._HAS_OTEL", True),
+            patch("provide.foundation.tracer.otel.Resource") as mock_resource_class,
+            patch("provide.foundation.tracer.otel.TraceIdRatioBased") as mock_sampler_class,
+            patch("provide.foundation.tracer.otel.TracerProvider") as mock_provider_class,
+            patch("provide.foundation.tracer.otel.otel_trace") as mock_trace,
+            patch("provide.foundation.tracer.otel.slog") as mock_log,
+        ):
                                 mock_resource_class.create.return_value = mock_resource
                                 mock_sampler_class.return_value = mock_sampler
                                 mock_provider_class.return_value = mock_tracer_provider
@@ -301,9 +295,10 @@ class TestGetOtelTracer(FoundationTestCase):
         """Test getting tracer successfully."""
         mock_tracer = Mock()
 
-        with patch("provide.foundation.tracer.otel._HAS_OTEL", True):
-            with patch("provide.foundation.tracer.otel.otel_trace") as mock_trace:
-                mock_trace.get_tracer.return_value = mock_tracer
+        with (
+            patch("provide.foundation.tracer.otel._HAS_OTEL", True),
+            patch("provide.foundation.tracer.otel.otel_trace") as mock_trace,
+        ):
 
                 result = get_otel_tracer("test-tracer")
 
@@ -312,13 +307,15 @@ class TestGetOtelTracer(FoundationTestCase):
 
     def test_get_tracer_exception(self) -> None:
         """Test getting tracer when an exception occurs."""
-        with patch("provide.foundation.tracer.otel._HAS_OTEL", True):
-            with patch("provide.foundation.tracer.otel.otel_trace") as mock_trace:
+        with (
+            patch("provide.foundation.tracer.otel._HAS_OTEL", True),
+            patch("provide.foundation.tracer.otel.otel_trace") as mock_trace,
+        ):
                 mock_trace.get_tracer.side_effect = Exception("Tracer error")
 
                 result = get_otel_tracer("test-tracer")
 
                 assert result is None
 
-# 🧱🏗️🔚
 
+# 🧱🏗️🔚
