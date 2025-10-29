@@ -72,5 +72,3 @@ if __name__ == "__main__":
     pout("\n✅ Example 6 completed.")
 
 # 🧱🏗️🔚
-
-

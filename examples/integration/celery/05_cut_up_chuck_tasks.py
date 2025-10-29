@@ -398,5 +398,3 @@ if __name__ == "__main__":
     pout(f"• {len(LOGGER_CONTEXTS)} logger contexts available")
 
 # 🧱🏗️🔚
-
-

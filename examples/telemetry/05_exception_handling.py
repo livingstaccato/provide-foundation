@@ -19,7 +19,7 @@ if src_path.exists() and str(src_path) not in sys.path:
 
 from typing import Never  # noqa: E402
 
-from provide.foundation import logger, get_hub  # noqa: E402
+from provide.foundation import get_hub, logger  # noqa: E402
 from provide.foundation.console.output import pout  # noqa: E402
 from provide.foundation.logger.config import (  # noqa: E402
     LoggingConfig,
@@ -82,5 +82,3 @@ if __name__ == "__main__":
     pout("\n✅ Example 5 completed.")
 
 # 🧱🏗️🔚
-
-

@@ -270,7 +270,6 @@ def example_multi_source() -> None:
     pout("Example 4: Multi-source Configuration")
     pout("=" * 60)
 
-    import asyncio
 
     with temp_dir() as tmppath:
         # Create default config file
@@ -311,7 +310,6 @@ def example_schema_validation() -> None:
     pout("Example 5: Schema Validation")
     pout("=" * 60)
 
-    import asyncio
 
     # Define schema
     schema = ConfigSchema(

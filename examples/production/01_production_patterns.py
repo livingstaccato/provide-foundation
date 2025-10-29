@@ -22,8 +22,8 @@ from provide.testkit import reset_foundation_setup_for_testing  # noqa: E402
 from provide.foundation import (  # noqa: E402
     LoggingConfig,
     TelemetryConfig,
-    logger,
     get_hub,
+    logger,
 )
 from provide.foundation.console.output import pout  # noqa: E402
 
@@ -117,5 +117,3 @@ if __name__ == "__main__":
     pout("\n✅ Example 10 completed.")
 
 # 🧱🏗️🔚
-
-

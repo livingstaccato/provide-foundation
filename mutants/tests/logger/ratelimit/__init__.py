@@ -1,1 +1,0 @@
-"""Tests for Foundation rate limiting system."""

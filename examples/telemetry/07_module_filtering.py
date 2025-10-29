@@ -20,9 +20,9 @@ if src_path.exists() and str(src_path) not in sys.path:
 from provide.foundation import (  # noqa: E402
     LoggingConfig,
     TelemetryConfig,
+    get_hub,
     logger,
     pout,
-    get_hub,
 )
 
 
@@ -81,5 +81,3 @@ if __name__ == "__main__":
     pout("\n✅ Example 7 completed.")
 
 # 🧱🏗️🔚
-
-

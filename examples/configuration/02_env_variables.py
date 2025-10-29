@@ -19,8 +19,8 @@ if src_path.exists() and str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
 
 from provide.foundation import (  # noqa: E402
-    logger,
     get_hub,
+    logger,
 )
 from provide.foundation.console.output import pout  # noqa: E402
 

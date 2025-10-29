@@ -7,9 +7,9 @@ into smaller, more manageable files based on test classes.
 
 from __future__ import annotations
 
+from pathlib import Path
 import re
 import subprocess
-from pathlib import Path
 
 
 def find_test_class_boundaries(content: str) -> list[tuple[int, str, int]]:

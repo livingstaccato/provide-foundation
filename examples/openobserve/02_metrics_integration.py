@@ -44,7 +44,6 @@ src_path = project_root / "src"
 if src_path.exists() and str(src_path) not in sys.path:
     sys.path.insert(0, str(src_path))
 
-from provide.foundation import get_hub  # noqa: E402
 from provide.foundation.integrations.openobserve.client import OpenObserveClient  # noqa: E402
 from provide.foundation.integrations.openobserve.config import OpenObserveConfig  # noqa: E402
 from provide.foundation.integrations.openobserve.metrics_formatters import (  # noqa: E402
@@ -324,5 +323,3 @@ if __name__ == "__main__":
     asyncio.run(main())
 
 # 🧱🏗️🔚
-
-

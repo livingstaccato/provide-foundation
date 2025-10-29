@@ -1,1 +1,0 @@
-"""Tests for the Foundation error handling system."""
