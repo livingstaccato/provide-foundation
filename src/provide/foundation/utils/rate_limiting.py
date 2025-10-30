@@ -104,8 +104,7 @@ class TokenBucketRateLimiter:
             if self._tokens >= 1.0:
                 self._tokens -= 1.0
                 if self._logger:
-                    self._logger.debug(
-                    )
+                    self._logger.debug()
                 return True
             if self._logger:
                 self._logger.warning(
@@ -121,5 +120,6 @@ class TokenBucketRateLimiter:
             # up-to-date count
             # await self._refill_tokens()
             return self._tokens
+
 
 # 🧱🏗️🔚

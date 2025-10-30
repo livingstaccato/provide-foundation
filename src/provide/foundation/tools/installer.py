@@ -237,6 +237,7 @@ class ToolInstaller:
 
         # Make executable (Unix only - Windows uses file extension)
         import platform
+
         if platform.system() != "Windows":
             target.chmod(0o755)
 
@@ -289,5 +290,6 @@ class ToolInstaller:
 
             latest_link.symlink_to(install_dir)
             log.debug(f"Created symlink {latest_link} -> {install_dir}")
+
 
 # 🧱🏗️🔚

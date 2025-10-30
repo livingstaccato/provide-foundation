@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import contextlib
 import os
-import sys
 from pathlib import Path
+import sys
 
 from provide.foundation.logger import get_logger
 

@@ -118,7 +118,6 @@ def _stream_with_timeout(process: Any, timeout: float, cmd_str: str) -> Iterator
         # On Windows: Use simple polling (select doesn't work with pipes)
         if sys.platform == "win32":
             # Windows: Simple polling with small sleep
-            import msvcrt
             import time
 
             elapsed = time.time() - start_time
@@ -248,5 +247,6 @@ def stream(
             code="PROCESS_STREAM_ERROR",
             command=cmd_str,
         ) from e
+
 
 # 🧱🏗️🔚

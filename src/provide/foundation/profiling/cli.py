@@ -116,4 +116,5 @@ def register_profile_command(hub: Hub) -> None:
     # This function exists for explicit registration if needed
     pass
 
+
 # 🧱🏗️🔚
