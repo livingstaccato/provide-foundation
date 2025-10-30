@@ -62,6 +62,7 @@ class TestCompleteCliIntegration(FoundationTestCase):
             if ctx.json_output:
                 click.echo(json.dumps({"status": "success", "migrations": 5}))
             else:
+                click.echo("Migration successful (5 migrations)")
 
         @cli.command()
         @pass_context
