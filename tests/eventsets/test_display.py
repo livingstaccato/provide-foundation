@@ -110,6 +110,7 @@ class TestFormatEventSetConfig:
             ),
             EventMapping(
                 name="http-status",
+                visual_markers={"200": "✅", "404": "❌"},
                 metadata_fields={},
                 transformations={},
             ),
