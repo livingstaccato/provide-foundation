@@ -28,7 +28,6 @@ def _set_title_impl(title: str) -> None:
         return
 
     set_process_title(title)
-    pout(f"✅ Process title set to: {title}")
 
 
 def _get_title_impl() -> None:
@@ -45,7 +44,6 @@ def _get_title_impl() -> None:
 def _info_impl() -> None:
     """Implementation of info command logic."""
     if has_setproctitle():
-        pout("✅ Process title support: Available")
         current = get_process_title()
         pout(f"Current title: {current}")
     else:
