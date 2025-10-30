@@ -88,6 +88,7 @@ def show_profile_metrics(ctx: CLIContext) -> None:
             perr("  ⚠️  Status: Disabled", color="yellow")
         else:
             sample_rate = profiler.processor.sample_rate * 100
+            pout(f"  📊 Sample rate: {sample_rate:.0f}%")
 
 
 @register_command("profile")
