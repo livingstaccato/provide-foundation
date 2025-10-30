@@ -278,6 +278,7 @@ class TestFormatResolverState:
         mapping1.visual_markers = {"GET": "🔍"}
 
         mapping2 = Mock()
+        mapping2.visual_markers = {"200": "✅"}
 
         mapping3 = Mock()
         mapping3.visual_markers = {"ERROR": "❌"}
