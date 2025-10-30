@@ -86,12 +86,13 @@ jobs:
             arch: "x64"
             platform: "linux/amd64"
 
-          # Ubuntu ARM64 (via QEMU emulation)
-          - os: ubuntu-latest
+          # Ubuntu ARM64 (GitHub-hosted ARM64 runner - public beta)
+          # Requires organization-level runner with "Ubuntu 24.04 by Arm Limited" image
+          # Set runner label in your organization settings or comment out this entry
+          - os: ubuntu-24.04-arm64
             python-version: "3.11"
             arch: "arm64"
             platform: "linux/arm64"
-            use_qemu: true
 
           # macOS ARM64 (M1/M2)
           - os: macos-14
@@ -114,12 +115,6 @@ jobs:
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
-
-      - name: 🔧 Setup QEMU for ARM64 Emulation
-        if: matrix.use_qemu == true
-        uses: docker/setup-qemu-action@v3
-        with:
-          platforms: linux/arm64
 
       - name: 🔐 Setup GitHub Auth
         if: runner.os != 'Windows'  # Git config approach doesn't work well on Windows
@@ -332,11 +327,12 @@ jobs:
         run: |
           echo "## 🧪 provide-foundation CI Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "### Platform Coverage" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Ubuntu x86_64 (Python 3.11)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ macOS ARM64 / M1 (Python 3.11)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ macOS Intel x86_64 (Python 3.11)" >> $GITHUB_STEP_SUMMARY
-          echo "- ✅ Windows x86_64 (Python 3.11)" >> $GITHUB_STEP_SUMMARY
+          echo "### Platform Coverage (Python 3.11)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Ubuntu x86_64" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Ubuntu ARM64 (GitHub-hosted beta)" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ macOS ARM64 / M1" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ macOS Intel x86_64" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Windows x86_64" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Job Results" >> $GITHUB_STEP_SUMMARY
           echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
@@ -355,4 +351,4 @@ jobs:
 
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "**Note:** Ubuntu ARM64 support requires self-hosted runners. Currently testing x86_64 only." >> $GITHUB_STEP_SUMMARY
+          echo "**Note:** Ubuntu ARM64 uses GitHub-hosted ARM64 runners (public beta). Requires organization-level runner setup with 'Ubuntu 24.04 by Arm Limited' image." >> $GITHUB_STEP_SUMMARY
