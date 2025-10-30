@@ -87,9 +87,7 @@ jobs:
             platform: "linux/amd64"
 
           # Ubuntu ARM64 (GitHub-hosted ARM64 runner - public beta)
-          # Requires organization-level runner with "Ubuntu 24.04 by Arm Limited" image
-          # Set runner label in your organization settings or comment out this entry
-          - os: ubuntu-24.04-arm64
+          - os: ubuntu-24.04-arm
             python-version: "3.11"
             arch: "arm64"
             platform: "linux/arm64"
