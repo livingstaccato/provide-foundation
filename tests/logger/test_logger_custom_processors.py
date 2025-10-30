@@ -93,6 +93,7 @@ class TestAddLoggerNameEmojiPrefix(FoundationTestCase):
         # Ensure a known logger name that has an emoji
         # From _LOGGER_NAME_EMOJI_PREFIXES in custom_processors.py:
         logger_name_with_emoji = "test.basic"
+        expected_emoji = "🔹"  # Default emoji for most logger names
 
         event_dict = {
             "logger_name": logger_name_with_emoji,
