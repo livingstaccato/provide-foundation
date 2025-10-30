@@ -1,4 +1,4 @@
-# 
+#
 # SPDX-FileCopyrightText: Copyright (c) 2025 provide.io llc. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -434,5 +434,6 @@ class TestShowEventMatrix:
         assert "Total Field Mappings: 3" in logged_message
         assert "Total Event Sets: 1" in logged_message
         assert "Sample Visual Markers:" in logged_message
+
 
 # 🧱🏗️🔚
