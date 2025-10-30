@@ -104,7 +104,9 @@ class TokenBucketRateLimiter:
             if self._tokens >= 1.0:
                 self._tokens -= 1.0
                 if self._logger:
-                    self._logger.debug()
+                    self._logger.debug(
+                        f"🔩✅ Request allowed. Tokens remaining: {self._tokens:.2f}/{self._capacity:.2f}",
+                    )
                 return True
             if self._logger:
                 self._logger.warning(

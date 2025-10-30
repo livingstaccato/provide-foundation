@@ -127,6 +127,7 @@ class TestEventSetTypes(FoundationTestCase):
 
     def test_event_set_creation(self) -> None:
         """Test EventSet can be created."""
+        mapping = EventMapping(name="test", default_key="default")
         field_mapping = FieldMapping(log_key="test.field", event_set_name="test")
 
         event_set = EventSet(
