@@ -110,6 +110,12 @@ jobs:
             arch: "x64"
             platform: "windows/amd64"
 
+          # Windows ARM64 (GitHub-hosted - public preview)
+          - os: windows-11-arm
+            python-version: "3.11"
+            arch: "arm64"
+            platform: "windows/arm64"
+
     steps:
       - name: 📥 Checkout Code
         uses: actions/checkout@v4
@@ -331,6 +337,7 @@ jobs:
           echo "- ✅ macOS ARM64 / M1" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ macOS Intel x86_64" >> $GITHUB_STEP_SUMMARY
           echo "- ✅ Windows x86_64" >> $GITHUB_STEP_SUMMARY
+          echo "- ✅ Windows ARM64 (GitHub-hosted preview)" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Job Results" >> $GITHUB_STEP_SUMMARY
           echo "| Stage | Status |" >> $GITHUB_STEP_SUMMARY
@@ -349,4 +356,6 @@ jobs:
 
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
-          echo "**Note:** Ubuntu ARM64 uses GitHub-hosted ARM64 runners (public beta). Requires organization-level runner setup with 'Ubuntu 24.04 by Arm Limited' image." >> $GITHUB_STEP_SUMMARY
+          echo "**Notes:**" >> $GITHUB_STEP_SUMMARY
+          echo "- Ubuntu ARM64: Uses organization runner \`ubuntu-24.04-arm\` with 'Ubuntu 24.04 by Arm Limited' image" >> $GITHUB_STEP_SUMMARY
+          echo "- Windows ARM64: Uses GitHub-hosted \`windows-11-arm\` runner (public preview, may have longer queue times)" >> $GITHUB_STEP_SUMMARY
