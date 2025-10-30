@@ -68,7 +68,7 @@ def _get_conftest_diag_logger() -> stdlib_logging.Logger:
 
 conftest_diag_logger = _get_conftest_diag_logger()
 if not os.getenv("PYTEST_WORKER_ID"):  # Avoid multiple messages with xdist
-
+    pass  # Placeholder for potential diagnostic logging
 
 # Removed no_cover hook - not needed, issue is time_machine + asyncio, not coverage
 
