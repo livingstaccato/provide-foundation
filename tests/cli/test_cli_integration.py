@@ -142,6 +142,7 @@ class TestCompleteCliIntegration(FoundationTestCase):
             if ctx.json_output:
                 click.echo(json.dumps({"status": "success", "migrations": 5}))
             else:
+                click.echo("Migration completed successfully")
 
         runner = CliTestRunner()
         result = runner.invoke(migrate_cmd, ["--json", "--log-level", "WARNING"])
