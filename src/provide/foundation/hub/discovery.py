@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from provide.foundation.console.output import perr
 from provide.foundation.errors.decorators import resilient
 from provide.foundation.hub.categories import ComponentCategory
 from provide.foundation.hub.registry import Registry
@@ -96,8 +97,8 @@ def _load_entry_point(
         return entry_point.name, component_class
 
     except Exception as e:
-        # Print error to stderr (avoid circular dependency with logger)
-        print(f"Failed to load entry point {entry_point.name}: {e}", file=sys.stderr)
+        # Use perr to stderr (avoid circular dependency with logger)
+        perr(f"Failed to load entry point {entry_point.name}: {e}")
         return None
 
 
@@ -130,7 +131,7 @@ def _get_entry_points(group: str) -> Any:
         # Python 3.11+ API
         return entry_points.select(group=group)
     except Exception as e:
-        print(f"Failed to discover entry points for group {group}: {e}", file=sys.stderr)
+        perr(f"Failed to discover entry points for group {group}: {e}")
         return []
 
 
