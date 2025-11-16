@@ -76,7 +76,6 @@ def _load_entry_point(
         Tuple of (name, component_class) if successful, None otherwise
 
     """
-    import sys
 
     try:
         # Load the component class
@@ -118,7 +117,6 @@ def _get_entry_points(group: str) -> Any:
         Entry points for the group
 
     """
-    import sys
 
     try:
         from importlib import metadata
