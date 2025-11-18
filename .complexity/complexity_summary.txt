@@ -1,0 +1,19 @@
+Complexity Analysis Report - complexity
+==================================================
+Status: ✅ PASSED
+Overall Grade: A
+Score: 100.0%
+Files Analyzed: 2
+Total Functions: 3
+Average Complexity: 3.67
+Max Complexity: 9
+
+Grade Breakdown:
+  A: 2 functions
+  B: 1 functions
+
+Lines of Code: 30
+Logical Lines: 27
+Comment Lines: 0
+
+Execution Time: 0.00s

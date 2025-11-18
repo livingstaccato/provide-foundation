@@ -1,0 +1,53 @@
+{
+  "tool": "complexity",
+  "passed": true,
+  "score": 100.0,
+  "details": {
+    "total_files": 2,
+    "total_functions": 3,
+    "average_complexity": 3.67,
+    "max_complexity": 9,
+    "overall_grade": "A",
+    "grade_breakdown": {
+      "A": 2,
+      "B": 1,
+      "C": 0,
+      "D": 0,
+      "E": 0,
+      "F": 0
+    },
+    "lines_of_code": 30,
+    "logical_lines": 27,
+    "comment_lines": 0,
+    "grade": "A",
+    "thresholds": {
+      "min_grade": "B",
+      "max_complexity": 15,
+      "min_score": 80.0
+    },
+    "most_complex_functions": [
+      {
+        "file": "/private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-368/popen-gw8/test_real_complexity_integrati0/complex.py",
+        "name": "complex_function",
+        "complexity": 9,
+        "rank": "B",
+        "lineno": 2
+      },
+      {
+        "file": "/private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-368/popen-gw8/test_real_complexity_integrati0/simple.py",
+        "name": "add",
+        "complexity": 1,
+        "rank": "A",
+        "lineno": 2
+      },
+      {
+        "file": "/private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-368/popen-gw8/test_real_complexity_integrati0/simple.py",
+        "name": "multiply",
+        "complexity": 1,
+        "rank": "A",
+        "lineno": 5
+      }
+    ]
+  },
+  "execution_time": 0.00327301025390625
+}

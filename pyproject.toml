@@ -1,0 +1,347 @@
+#
+# pyproject.toml
+#
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "provide-foundation"
+description = "A comprehensive Python foundation library for building robust applications with structured logging, CLI framework, configuration management, and essential building blocks."
+dynamic = ["version"]
+requires-python = ">=3.11"
+readme = "README.md"
+license = "Apache-2.0"
+authors = [
+    { name = "Tim Perkins", email = "code@tim.life" },
+]
+maintainers = [
+    { name = "provide.io", email = "code@provide.io" },
+]
+keywords = ["telemetry", "logging", "tracing", "python", "pyvider"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: System :: Logging",
+    "Topic :: System :: Monitoring",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Typing :: Typed",
+]
+dependencies = [
+    "aiofiles>=23.2.1",
+    "attrs>=23.1.0",
+    "structlog>=25.3.0",
+    "tomli_w>=1.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/provide-io/provide-foundation"
+Documentation = "https://foundry.provide.io/foundation/"
+Repository = "https://github.com/provide-io/provide-foundation"
+Issues = "https://github.com/provide-io/provide-foundation/issues"
+Examples = "https://github.com/provide-io/provide-foundation/tree/main/examples"
+
+
+[project.optional-dependencies]
+cli = [
+    "click>=8.1.7",
+]
+compression = [
+    "zstandard>=0.22.0",
+]
+crypto = [
+    "cryptography>=45.0.7",
+]
+transport = [
+    "httpx>=0.27.0",
+]
+opentelemetry = [
+    "opentelemetry-api>=1.22.0",
+    "opentelemetry-sdk>=1.22.0",
+    "opentelemetry-exporter-otlp-proto-grpc>=1.22.0",
+    "opentelemetry-exporter-otlp-proto-http>=1.22.0",
+]
+# Platform utilities (system/OS info and integration)
+platform = [
+    "psutil>=3.3.11",
+    "py-cpuinfo>=9.0.0",
+    # Linux-only: sdnotify>=0.3.2 (optional - gracefully degrades if not installed)
+    # Install manually on Linux: uv pip install sdnotify
+]
+# Process utilities (process control and lifecycle)
+process = [
+    "psutil>=3.3.11",
+    "setproctitle>=1.3.3",
+    # Linux-only: python-prctl>=1.8.1 (optional - gracefully degrades if not installed)
+    # Install manually on Linux: uv pip install python-prctl
+]
+# Convenience groups
+extended = [
+    "provide-foundation[platform,process]",
+]
+all = [
+    "provide-foundation[cli,compression,crypto,transport,opentelemetry,extended]",
+]
+
+[project.scripts]
+foundation = "provide.foundation.cli.main:cli [cli]"
+
+[dependency-groups]
+dev = [
+    "provide-testkit[advanced-testing,build,standard,typecheck,utils]",
+]
+docs = [
+    "provide-testkit[docs]",
+]
+protobuf = [
+    "protobuf>=6.32.0",
+]
+
+################################################################################
+# Pytest Configuration
+################################################################################
+
+[tool.pytest.ini_options]
+log_cli = true
+log_cli_level = "DEBUG"
+
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+asyncio_default_test_loop_scope = "function"
+
+testpaths = ["tests"]
+pythonpath = ["src", "."]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*", "*Tests"]
+python_functions = ["test_*", "*_test"]
+addopts = "-m 'not integration and not benchmark and not slow and not time_sensitive and not external_service' -rFE -q --color=yes --benchmark-columns=min,max,mean,stddev,median,iqr,ops --benchmark-sort=mean --dist worksteal"
+markers = [
+    "serial: run tests serially to avoid event loop conflicts",
+    "time_sensitive: tests with strict timing requirements (run serially)",
+    "async_unsafe: async tests that must run serially",
+    "unit: fast unit tests",
+    "integration: integration tests requiring setup",
+    "integration.openobserve: OpenObserve integration tests",
+    "slow: tests taking >1s",
+    "fast: tests taking <100ms",
+    # Time-sensitive markers
+    "benchmark: performance/timing sensitive tests",
+    "flaky: tests known to be intermittently failing",
+    # External service markers
+    "external_service: tests requiring external services",
+    # Module markers
+    "archive: archive module tests",
+    "process: process/subprocess tests",
+    "network: network/transport tests",
+    "config: configuration tests",
+    "logger: logging tests",
+    # Chaos testing markers
+    "chaos: property-based chaos testing with Hypothesis",
+    "chaos_slow: long-running chaos tests",
+    "chaos_concurrent: concurrency chaos tests",
+    "chaos_io: I/O chaos tests",
+    # Skip conditions
+    "requires_docker: skip if docker not available",
+    "requires_network: skip if offline",
+]
+filterwarnings = [
+    "ignore::DeprecationWarning",
+    "ignore:cannot collect test class 'Test.*' because it has a __init__ constructor:pytest.PytestCollectionWarning",
+    "ignore:cannot collect test class .* because it has a __init__ constructor:pytest.PytestCollectionWarning",
+    "ignore:.* KqueueSelector constructor:pytest.PytestCollectionWarning",
+    "ignore:.* KqueueSelector constructor:pytest.PytestCollectionWarning",
+    "ignore:coroutine .* was never awaited:RuntimeWarning",
+    "ignore:Module already imported so cannot be rewritten:pytest.PytestAssertRewriteWarning",
+]
+norecursedirs = [
+    ".git", ".hg", ".svn", "*_build", "build", "dist", "*.egg-info",
+    ".venv", "venv", # Added venv as it's a common default
+    "htmlcov", "docs/_build",
+    ".hypothesis", # Added to address the warning
+]
+# Changed from -ra to -rFE to suppress skipped test output
+
+################################################################################
+# Ruff Linter and Formatter Configuration
+################################################################################
+
+[tool.ruff]
+line-length = 111
+indent-width = 4
+target-version = "py311"
+
+[tool.ruff.lint]
+select = [
+    "E", "F", "W", "I", "UP", "ANN", "B", "C90", "SIM", "PTH", "RUF",
+    "D",    # Docstrings
+    "S",    # Security
+]
+ignore = [
+    "ANN401",  # any-type
+    "B008",    # function-call-in-default-argument
+    "E501",    # line-too-long
+    # Docstring style choices
+    "D203",    # one-blank-line-before-class (conflicts with D211)
+    "D213",    # multi-line-summary-second-line (conflicts with D212)
+    # Security - intentional/false positives
+    "S110",    # try-except-pass (often intentional for optional features)
+    "S112",    # try-except-continue (often intentional)
+    "S311",    # suspicious-non-cryptographic-random-usage (random is not for crypto)
+    "S608",    # hardcoded-sql-expression (SQL in examples/test data)
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Tests - No docstrings required, asserts OK, test data OK
+"tests/**/*.py" = [
+    "ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "ANN206",  # Type annotations
+    "C901",      # Complexity
+    "B017",      # pytest.raises(Exception)
+    "SIM117", "SIM105",  # Style preferences
+    "RUF012", "RUF009", "RUF043",  # Ruff-specific
+    "UP007", "UP045",  # Pyupgrade
+    "E402",      # Imports after code
+    "D",         # No docstrings required in tests
+    "S",         # Security rules don't apply to test data (asserts, hardcoded passwords, temp files, etc.)
+]
+# Examples - Show best practices, no docstrings required
+"examples/**/*.py" = [
+    "ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "ANN206",
+    "C901", "E402",
+    "D",         # No docstrings required in examples
+    "S",         # Security rules don't apply to example code
+]
+# Scripts - No docstrings required, allow some flexibility
+"scripts/**/*.py" = [
+    "ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204",
+    "C901", "E402",
+    "UP031",     # Printf formatting OK
+    "RUF001",    # Unicode OK
+    "B007",      # Unused loop vars OK
+    "D",         # No docstrings required in scripts
+    "S603", "S604", "S607",  # subprocess calls OK in scripts
+]
+# Root demo files
+"*.py" = ["ANN001", "ANN201", "ANN202", "C901", "RUF001", "RUF002", "D", "S108"]  # Temp files OK in demos
+# Process modules - shell=True and subprocess are intentional
+"src/provide/foundation/process/**/*.py" = ["S603", "S604"]
+# Archive modules - extractall is validated
+"src/provide/foundation/archive/**/*.py" = ["S202"]
+"src/provide/foundation/tools/installer.py" = ["S202"]
+# Error types - AUTH_TOKEN_EXPIRED is not a password
+"src/provide/foundation/errors/types.py" = ["S105"]
+
+[tool.ruff.lint.isort]
+known-first-party = ["pyvider", "tests"]
+force-sort-within-sections = true
+combine-as-imports = true
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+skip-magic-trailing-comma = false
+line-ending = "auto"
+
+################################################################################
+# MyPy Static Type Checker Configuration
+################################################################################
+
+[tool.mypy]
+mypy_path = "src"
+# Show error codes in output.
+show_error_codes = true
+# Show column numbers in output.
+show_column_numbers = true
+# Use visually nicer output in error messages:
+pretty = true
+# Use current Python version.
+python_version = "3.11"
+# Warn about unused '# type: ignore' comments.
+warn_unused_ignores = true
+# Warn about unused '[mypy-pattern]'  config sections.
+warn_unused_configs = true
+# Do not follow imports to .pyi stubs for external libraries.
+follow_imports = "normal"  # Changed global strategy
+# Do not check that test functions are annotated.
+disallow_untyped_decorators = false
+
+[[tool.mypy.overrides]]
+module = [
+    "structlog",
+    "structlog.*"
+]
+follow_imports = "skip" # Keep structlog skipped
+ignore_missing_imports = true
+
+[[tool.mypy.overrides]]
+module = [
+    "opentelemetry",
+    "opentelemetry.*"
+]
+ignore_missing_imports = true
+
+################################################################################
+# Coverage.py Configuration
+################################################################################
+
+[tool.coverage.run]
+source = ["src/provide/foundation"]
+branch = true
+parallel = true
+omit = [
+    "*/provide/foundation/testing/*",
+    "*/testing/*"
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+fail_under = 80 # Set this to a realistic target once you get >0%
+precision = 2
+exclude_lines = [
+    "pragma: no cover",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+    "def __repr__",
+    "def __str__",
+    "@(abc\\.)?abstractmethod",
+    "pass",
+    # This is usually fine, but double-check it's not too greedy for your codebase
+    "logger\\.(debug|info|warning|error|exception|critical|trace)\\(",
+    "import logging", # Excluding all import logging lines might be too much
+    "from logging import", # Same as above
+    "print\\(",
+]
+
+[tool.coverage.html]
+directory = "htmlcov" # Using an absolute path
+
+[tool.coverage.xml]
+output = "coverage.xml"
+
+[tool.setuptools]
+packages = {find = {where = ["src"]}}
+
+[tool.setuptools.dynamic]
+version = {file = "VERSION"}
+
+[[tool.uv.index]]
+name = "testpypi"
+url = "https://test.pypi.org/simple/"
+publish-url = "https://test.pypi.org/legacy/"
+explicit = true
+
+[tool.bandit]
+exclude_dirs = [".venv", "tests"]
+
+[tool.pyrefly]
+project_includes = [
+    "src",
+    "tests",
+]
+
+# 🐍🏗️⚙️

@@ -1,0 +1,14 @@
+Most Complex Functions
+==================================================
+
+1. complex_function (Grade B)
+   File: /private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-368/popen-gw8/test_real_complexity_integrati0/complex.py:2
+   Complexity: 9
+
+2. add (Grade A)
+   File: /private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-368/popen-gw8/test_real_complexity_integrati0/simple.py:2
+   Complexity: 1
+
+3. multiply (Grade A)
+   File: /private/var/folders/sg/wy47gw996f78fznt898m8x540000gn/T/pytest-of-tim/pytest-368/popen-gw8/test_real_complexity_integrati0/simple.py:5
+   Complexity: 1
