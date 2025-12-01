@@ -1,3 +1,7 @@
+# Inherit shared configuration from provide-foundry
+INHERIT: .provide/foundry/base-mkdocs.yml
+
+# Project-Specific Configuration
 site_name: provide-foundation
 site_description: Beautiful, Performant, Structured Logging for Python - Enterprise-grade telemetry built on structlog
 site_author: provide.io
@@ -63,8 +67,6 @@ plugins:
         - docs/reference/gen_ref_pages.py
   - literate-nav:
       nav_file: SUMMARY.md
-  - macros:
-      include_dir: docs/.shared-theme/data
   - mkdocstrings:
       default_handler: python
       handlers:
