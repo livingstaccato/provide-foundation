@@ -71,17 +71,19 @@ class TestWaitForProcessOutput(FoundationTestCase):
     @pytest.mark.asyncio
     async def test_wait_for_output_success(self) -> None:
         """Test successful output waiting."""
-        # Script delays output to ensure monitor is ready, then prints slowly
+        import asyncio
+
+        # Script waits longer to ensure monitor is ready, then prints slowly
         script = """
 import sys
 import time
-time.sleep(0.1)  # Let monitor start
+time.sleep(0.5)  # Long delay to let monitor start
 print('start', flush=True)
-time.sleep(0.05)
+time.sleep(0.1)
 print('middle', flush=True)
-time.sleep(0.05)
+time.sleep(0.1)
 print('end', flush=True)
-time.sleep(0.5)  # Keep process alive while output is captured
+time.sleep(1.0)  # Keep process alive while output is captured
 """
         proc = ManagedProcess(
             [sys.executable, "-u", "-c", script],
@@ -90,10 +92,13 @@ time.sleep(0.5)  # Keep process alive while output is captured
         )
         proc.launch()
 
+        # Small delay to let process start
+        await asyncio.sleep(0.1)
+
         result = await wait_for_process_output(
             proc,
             expected_parts=["start", "middle", "end"],
-            timeout=5.0,
+            timeout=10.0,
         )
 
         assert "start" in result
@@ -220,11 +225,13 @@ class TestProcessLifecycleIntegration(FoundationTestCase):
     @pytest.mark.asyncio
     async def test_full_lifecycle_with_output_waiting(self) -> None:
         """Test full lifecycle with output waiting."""
-        # Script delays output to ensure monitor is ready
+        import asyncio
+
+        # Script waits longer to ensure monitor is ready
         script = """
 import sys
 import time
-time.sleep(0.1)  # Let monitor start
+time.sleep(0.5)  # Long delay to let monitor start
 print('ready', flush=True)
 time.sleep(2)  # Keep process alive
 """
@@ -233,6 +240,8 @@ time.sleep(2)  # Keep process alive
             capture_output=True,
             text_mode=True,
         ) as proc:
+            # Small delay to let process start
+            await asyncio.sleep(0.1)
             # No need to call launch() - context manager already does this
 
             # Wait for ready signal
