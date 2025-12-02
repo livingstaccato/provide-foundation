@@ -122,7 +122,7 @@ class TestAsyncStreamCommand(FoundationTestCase):
         lines = []
 
         async for line in async_stream(
-            [sys.executable, "-c", "for i in range(3): print(f'line {i}')"],
+            [sys.executable, "-u", "-c", "for i in range(3): print(f'line {i}')"],
         ):
             lines.append(line)
 
