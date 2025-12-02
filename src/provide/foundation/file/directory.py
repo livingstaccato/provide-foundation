@@ -67,7 +67,7 @@ def ensure_parent_dir(
     return parent
 
 
-@resilient(fallback=False, suppress=(FileNotFoundError,) if False else ())
+@resilient(fallback=False)
 def safe_rmtree(
     path: Path | str,
     missing_ok: bool = True,

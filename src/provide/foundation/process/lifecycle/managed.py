@@ -293,7 +293,7 @@ class ManagedProcess:
         self.launch()
         return self
 
-    def __exit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+    def __exit__(self, exc_type: Any, exc_val: Any, _exc_tb: Any) -> None:
         """Context manager exit with cleanup."""
         self.terminate_gracefully()
         self.cleanup()
