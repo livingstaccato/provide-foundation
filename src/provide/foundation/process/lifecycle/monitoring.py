@@ -100,8 +100,9 @@ async def _try_read_process_line(
 ) -> tuple[str, bool]:
     """Try to read a line from process. Returns (new_buffer, pattern_found)."""
     try:
-        # Try to read a line with short timeout
-        line = await process.read_line_async(timeout=0.1)
+        # Try to read a line with reasonable timeout for subprocess I/O
+        # Note: Too short a timeout can miss data due to executor latency
+        line = await process.read_line_async(timeout=0.5)
         if line:
             buffer += line + "\n"  # Add newline back since readline strips it
             log.debug("Read line from process", line=line[:100])
