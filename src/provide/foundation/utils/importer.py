@@ -118,9 +118,7 @@ def lazy_import(parent_module: str, name: str) -> object:
             if name in SPECIAL_MODULES:
                 error_str = str(e)
                 # Check if error is about missing dependency for this feature
-                if (name == "cli" and "click" in error_str) or (
-                    name == "transport" and "httpx" in error_str
-                ):
+                if (name == "cli" and "click" in error_str) or (name == "transport" and "httpx" in error_str):
                     raise ImportError(SPECIAL_MODULES[name]) from e
             raise
     finally:
