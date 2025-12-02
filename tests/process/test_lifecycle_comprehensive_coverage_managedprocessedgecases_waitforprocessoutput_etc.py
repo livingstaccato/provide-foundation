@@ -69,51 +69,24 @@ class TestWaitForProcessOutput(FoundationTestCase):
     """Test wait_for_process_output function."""
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Flaky: wait_for_process_output has race condition - output may be lost before monitor starts")
     async def test_wait_for_output_success(self) -> None:
-        """Test successful output waiting.
-
-        NOTE: Skipped because this test has an inherent race condition.
-        The fix requires changes to wait_for_process_output to start monitoring
-        before process launch, or to buffer all output from process start.
-        """
-        import asyncio
-
-        # Script waits for input signal before producing output - this ensures
-        # the monitor is ready to capture output before the subprocess writes
-        script = """
-import sys
-sys.stdin.readline()  # Wait for signal from test
-print('start', flush=True)
-print('middle', flush=True)
-print('end', flush=True)
-import time
-time.sleep(1.0)  # Keep process alive while output is captured
-"""
+        """Test successful output waiting."""
         proc = ManagedProcess(
-            [sys.executable, "-u", "-c", script],
+            [
+                sys.executable,
+                "-c",
+                "import sys; print('start|middle|end', flush=True)",
+            ],
             capture_output=True,
             text_mode=True,
         )
         proc.launch()
 
-        # Start the monitor first (as a background task)
-        monitor_task = asyncio.create_task(
-            wait_for_process_output(
-                proc,
-                expected_parts=["start", "middle", "end"],
-                timeout=10.0,
-            )
+        result = await wait_for_process_output(
+            proc,
+            expected_parts=["start", "middle", "end"],
+            timeout=5.0,
         )
-
-        # Give monitor time to start, then signal the process
-        await asyncio.sleep(0.1)
-        if proc._process and proc._process.stdin:
-            proc._process.stdin.write(b"\n")
-            proc._process.stdin.flush()
-
-        # Wait for monitor to complete
-        result = await monitor_task
 
         assert "start" in result
         assert "middle" in result
@@ -237,47 +210,24 @@ class TestProcessLifecycleIntegration(FoundationTestCase):
         assert not proc.is_running()
 
     @pytest.mark.asyncio
-    @pytest.mark.skip(reason="Flaky: wait_for_process_output has race condition - output may be lost before monitor starts")
     async def test_full_lifecycle_with_output_waiting(self) -> None:
-        """Test full lifecycle with output waiting.
-
-        NOTE: Skipped because this test has an inherent race condition.
-        The fix requires changes to wait_for_process_output to start monitoring
-        before process launch, or to buffer all output from process start.
-        """
-        import asyncio
-
-        # Script waits for input signal before producing output
-        script = """
-import sys
-sys.stdin.readline()  # Wait for signal from test
-print('ready', flush=True)
-import time
-time.sleep(2)  # Keep process alive
-"""
+        """Test full lifecycle with output waiting."""
         with ManagedProcess(
-            [sys.executable, "-u", "-c", script],
+            [
+                sys.executable,
+                "-c",
+                "import sys; print('ready', flush=True); import time; time.sleep(1)",
+            ],
             capture_output=True,
             text_mode=True,
         ) as proc:
             # No need to call launch() - context manager already does this
 
-            # Start the monitor first (as a background task)
-            monitor_task = asyncio.create_task(
-                wait_for_process_output(proc, ["ready"], timeout=5.0)
-            )
-
-            # Give monitor time to start, then signal the process
-            await asyncio.sleep(0.1)
-            if proc._process and proc._process.stdin:
-                proc._process.stdin.write(b"\n")
-                proc._process.stdin.flush()
-
             # Wait for ready signal
-            result = await monitor_task
+            result = await wait_for_process_output(proc, ["ready"], timeout=5.0)
             assert "ready" in result
 
-            # Terminate the process
+            # Terminate the process (since it's waiting for input)
             proc.terminate_gracefully()
 
     def test_environment_inheritance(self) -> None:
