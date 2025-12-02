@@ -75,7 +75,8 @@ class TestWaitForProcessOutput(FoundationTestCase):
             [
                 sys.executable,
                 "-c",
-                "import sys; print('start|middle|end', flush=True)",
+                # Print output then sleep to keep process alive for monitoring
+                "import sys, time; print('start|middle|end', flush=True); time.sleep(2)",
             ],
             capture_output=True,
             text_mode=True,
