@@ -71,12 +71,20 @@ class TestWaitForProcessOutput(FoundationTestCase):
     @pytest.mark.asyncio
     async def test_wait_for_output_success(self) -> None:
         """Test successful output waiting."""
+        # Script delays output to ensure monitor is ready, then prints slowly
+        script = """
+import sys
+import time
+time.sleep(0.1)  # Let monitor start
+print('start', flush=True)
+time.sleep(0.05)
+print('middle', flush=True)
+time.sleep(0.05)
+print('end', flush=True)
+time.sleep(0.5)  # Keep process alive while output is captured
+"""
         proc = ManagedProcess(
-            [
-                sys.executable,
-                "-c",
-                "import sys, time; print('start|middle|end', flush=True); time.sleep(1)",
-            ],
+            [sys.executable, "-u", "-c", script],
             capture_output=True,
             text_mode=True,
         )
@@ -212,12 +220,16 @@ class TestProcessLifecycleIntegration(FoundationTestCase):
     @pytest.mark.asyncio
     async def test_full_lifecycle_with_output_waiting(self) -> None:
         """Test full lifecycle with output waiting."""
+        # Script delays output to ensure monitor is ready
+        script = """
+import sys
+import time
+time.sleep(0.1)  # Let monitor start
+print('ready', flush=True)
+time.sleep(2)  # Keep process alive
+"""
         with ManagedProcess(
-            [
-                sys.executable,
-                "-c",
-                "import sys, time; print('ready', flush=True); time.sleep(2)",
-            ],
+            [sys.executable, "-u", "-c", script],
             capture_output=True,
             text_mode=True,
         ) as proc:
