@@ -323,7 +323,7 @@ class TestManagedProcessTermination(FoundationTestCase):
             [
                 sys.executable,
                 "-c",
-                "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(1)",
+                "import signal, time; signal.signal(signal.SIGTERM, signal.SIG_IGN); time.sleep(10)",
             ],
         )
         proc.launch()
