@@ -109,7 +109,7 @@ class AsyncContextResource(AbstractAsyncContextManager[Any]):
         self._resource = await self._resource_factory()
         return self._resource
 
-    async def __aexit__(self, exc_type: Any, exc_val: Any, exc_tb: Any) -> None:
+    async def __aexit__(self, exc_type: Any, exc_val: Any, _exc_tb: Any) -> None:
         """Exit async context and cleanup resource."""
         if self._resource and hasattr(self._resource, "dispose_async"):
             await self._resource.dispose_async()
