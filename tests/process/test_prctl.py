@@ -7,6 +7,8 @@
 
 from __future__ import annotations
 
+import sys
+
 from provide.testkit import FoundationTestCase
 from provide.testkit.mocking import patch
 import pytest
@@ -99,7 +101,7 @@ class TestPrctl(FoundationTestCase):
                 set_no_new_privs(True)
 
     @pytest.mark.skipif(
-        not __import__("sys").platform.startswith("linux"),
+        not sys.platform.startswith("linux"),
         reason="prctl only available on Linux",
     )
     def test_set_death_signal_with_prctl_available(self) -> None:
@@ -117,7 +119,7 @@ class TestPrctl(FoundationTestCase):
         assert isinstance(result, bool)
 
     @pytest.mark.skipif(
-        not __import__("sys").platform.startswith("linux"),
+        not sys.platform.startswith("linux"),
         reason="prctl only available on Linux",
     )
     def test_set_dumpable_with_prctl_available(self) -> None:
@@ -133,7 +135,7 @@ class TestPrctl(FoundationTestCase):
         assert isinstance(result, bool)
 
     @pytest.mark.skipif(
-        not __import__("sys").platform.startswith("linux"),
+        not sys.platform.startswith("linux"),
         reason="prctl only available on Linux",
     )
     def test_set_name_with_prctl_available(self) -> None:
@@ -149,7 +151,7 @@ class TestPrctl(FoundationTestCase):
         assert isinstance(result, bool)
 
     @pytest.mark.skipif(
-        not __import__("sys").platform.startswith("linux"),
+        not sys.platform.startswith("linux"),
         reason="prctl only available on Linux",
     )
     def test_get_name_with_prctl_available(self) -> None:
