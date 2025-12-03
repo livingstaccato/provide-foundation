@@ -7,14 +7,12 @@
 
 from __future__ import annotations
 
-import sys
 import types
 import typing
 from typing import Any, Optional, Union
 
 from provide.testkit import FoundationTestCase
 from provide.testkit.mocking import patch
-import pytest
 
 from provide.foundation.hub.type_mapping import extract_click_type
 
