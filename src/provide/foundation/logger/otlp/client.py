@@ -186,15 +186,15 @@ class OTLPLogClient:
             normalized_attrs = normalize_attributes(log_attrs)
 
             # Map level to severity
-            severity_number = map_level_to_severity(level)
+            severity_number_int = map_level_to_severity(level)
 
             # Emit log record
-            from opentelemetry._logs import LogRecord
+            from opentelemetry._logs import LogRecord, SeverityNumber
 
             logger.emit(
                 LogRecord(
                     body=message,
-                    severity_number=severity_number,
+                    severity_number=SeverityNumber(severity_number_int),
                     severity_text=level.upper(),
                     attributes=normalized_attrs,
                     timestamp=int(time.time_ns()),
