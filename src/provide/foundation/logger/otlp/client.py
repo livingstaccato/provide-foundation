@@ -210,7 +210,9 @@ class OTLPLogClient:
 
             return True
 
-        except Exception:
+        except Exception as e:
+            import traceback
+            traceback.print_exc()
             if self.use_circuit_breaker:
                 breaker.record_failure()
             return False
