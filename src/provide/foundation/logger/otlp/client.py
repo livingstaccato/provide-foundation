@@ -189,14 +189,16 @@ class OTLPLogClient:
             severity_number = map_level_to_severity(level)
 
             # Emit log record
+            from opentelemetry._logs import LogRecord
+
             logger.emit(
-                {
-                    "body": message,
-                    "severity_number": severity_number,
-                    "severity_text": level.upper(),
-                    "attributes": normalized_attrs,
-                    "timestamp": int(time.time_ns()),
-                }
+                LogRecord(
+                    body=message,
+                    severity_number=severity_number,
+                    severity_text=level.upper(),
+                    attributes=normalized_attrs,
+                    timestamp=int(time.time_ns()),
+                )
             )
 
             # Force flush to ensure delivery
@@ -210,9 +212,7 @@ class OTLPLogClient:
 
             return True
 
-        except Exception as e:
-            import traceback
-            traceback.print_exc()
+        except Exception:
             if self.use_circuit_breaker:
                 breaker.record_failure()
             return False
