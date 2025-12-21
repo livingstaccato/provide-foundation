@@ -297,6 +297,7 @@ def _reset_direct_circuit_breaker_instances() -> None:
     This ensures we only reset orphaned instances created directly, while
     preserving the state of decorator-created instances within a test.
     """
+    import asyncio
     import gc
 
     try:
@@ -326,7 +327,13 @@ def _reset_direct_circuit_breaker_instances() -> None:
                     # Only reset instances that are still alive and not tracked by decorators
                     if obj is not None:
                         # Reset each circuit breaker instance to clean state
-                        obj.reset()
+                        # Handle both sync (SyncCircuitBreaker) and async (AsyncCircuitBreaker)
+                        reset_result = obj.reset()
+
+                        # If reset() returns a coroutine (AsyncCircuitBreaker), run it
+                        if asyncio.iscoroutine(reset_result):
+                            asyncio.run(reset_result)
+
                         instances_found += 1
                 except Exception:
                     # Skip instances that can't be reset (might be in an inconsistent state)
