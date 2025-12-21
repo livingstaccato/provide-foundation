@@ -9,6 +9,7 @@ from __future__ import annotations
 #
 # internal.py
 #
+import os
 import structlog
 
 """Internal Reset APIs for Foundation Testing.
@@ -299,6 +300,7 @@ def _reset_direct_circuit_breaker_instances() -> None:
     """
     import asyncio
     import gc
+    import sys
 
     try:
         from provide.foundation.hub.manager import get_hub
@@ -318,11 +320,19 @@ def _reset_direct_circuit_breaker_instances() -> None:
         # Find all CircuitBreaker instances in memory using garbage collector
         # Only reset those NOT tracked by decorators (i.e., created directly)
         instances_found = 0
+        debug = "DEBUG_RESET" in os.environ
+
+        if debug:
+            print(f"DEBUG: Looking for breakers, {len(decorator_tracked_ids)} tracked", file=sys.stderr)
+
         for obj in gc.get_objects():
             if (
                 isinstance(obj, (SyncCircuitBreaker, AsyncCircuitBreaker))
                 and id(obj) not in decorator_tracked_ids
             ):
+                if debug:
+                    print(f"DEBUG: Found {obj.__class__.__name__} instance", file=sys.stderr)
+
                 try:
                     # Only reset instances that are still alive and not tracked by decorators
                     if obj is not None:
@@ -332,11 +342,39 @@ def _reset_direct_circuit_breaker_instances() -> None:
 
                         # If reset() returns a coroutine (AsyncCircuitBreaker), run it
                         if asyncio.iscoroutine(reset_result):
-                            asyncio.run(reset_result)
+                            if debug:
+                                print(f"DEBUG: Resetting async breaker", file=sys.stderr)
+
+                            # Close any existing event loops before creating a new one
+                            try:
+                                loop = asyncio.get_event_loop()
+                                if loop.is_running():
+                                    if debug:
+                                        print(f"DEBUG: Loop is running, using ensure_future", file=sys.stderr)
+                                    # We're in an async context - can't use asyncio.run()
+                                    # Schedule the coroutine as a task instead
+                                    import concurrent.futures
+                                    future = asyncio.ensure_future(reset_result)
+                                    # Don't wait for it here - just ensure it's scheduled
+                                else:
+                                    if debug:
+                                        print(f"DEBUG: Loop exists but not running, using asyncio.run", file=sys.stderr)
+                                    # No running loop - safe to use asyncio.run()
+                                    asyncio.run(reset_result)
+                            except RuntimeError as e:
+                                if debug:
+                                    print(f"DEBUG: RuntimeError getting loop: {e}, using asyncio.run", file=sys.stderr)
+                                # No event loop - create one with asyncio.run()
+                                asyncio.run(reset_result)
+                        else:
+                            if debug:
+                                print(f"DEBUG: Resetting sync breaker", file=sys.stderr)
 
                         instances_found += 1
-                except Exception:
+                except Exception as e:
                     # Skip instances that can't be reset (might be in an inconsistent state)
+                    if debug:
+                        print(f"Failed to reset breaker: {e}", file=sys.stderr)
                     pass
 
         # Force garbage collection to clean up any dead references
