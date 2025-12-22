@@ -216,11 +216,11 @@ async def wait_for_process_output(
         if read_timeout <= 0:
             break
 
-        try:
-            line_data = await process.read_line_async(timeout=read_timeout)
-            if line_data:
-                buffer += line_data
-                log.debug("Read output from process", chunk=line_data[:100])
+        if _stdout_ready(process):
+            chunk = _read_stdout_chunk(process, buffer_size=buffer_size)
+            if chunk:
+                buffer += chunk
+                log.debug("Read output from process", chunk=chunk[:100])
                 if _check_pattern_found(buffer, expected_parts):
                     log.debug("Found expected pattern in buffer")
                     return buffer
@@ -228,16 +228,7 @@ async def wait_for_process_output(
                 if not process.is_running():
                     last_exit_code = process.returncode
                     return await _handle_exited_process(process, buffer, expected_parts, last_exit_code)
-        except TimeoutError:
-            if _stdout_ready(process):
-                chunk = _read_stdout_chunk(process, buffer_size=1)
-                if chunk:
-                    buffer += chunk
-                    log.debug("Read output from process", chunk=chunk[:100])
-                    if _check_pattern_found(buffer, expected_parts):
-                        log.debug("Found expected pattern in buffer")
-                        return buffer
-
+        else:
             if not process.is_running():
                 last_exit_code = process.returncode
                 return await _handle_exited_process(process, buffer, expected_parts, last_exit_code)
