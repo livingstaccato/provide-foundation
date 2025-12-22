@@ -27,6 +27,7 @@ from provide.foundation.hub.registry import Registry
 
 
 def setup_json_logging(setup_func: Callable[[TelemetryConfig | None], None]) -> None:
+    """Use JSON formatter at DEBUG level for deterministic test output."""
     config = TelemetryConfig(
         logging=LoggingConfig(console_formatter="json", default_level="DEBUG"),
     )
@@ -184,6 +185,7 @@ def test_context_propagation_in_logs(
     bound_logger.info("Processing request")
 
     log_output = captured_stderr_for_foundation.getvalue()
+    assert log_output, "Expected log output to be emitted"
     # Check for request_id in both key-value and JSON formats
     assert "request_id=req-123" in log_output or '"request_id": "req-123"' in log_output, (
         f"request_id not found in output: {log_output}"
