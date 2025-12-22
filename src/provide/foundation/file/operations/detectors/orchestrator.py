@@ -74,10 +74,6 @@ class OperationDetector:
         """
         if not events:
             return []
-        if len(events) == 1:
-            event_age_ms = (datetime.now() - events[0].timestamp).total_seconds() * 1000
-            if event_age_ms < self.config.time_window_ms:
-                return []
 
         # Sort events by timestamp
         sorted_events = sorted(events, key=lambda e: e.timestamp)
