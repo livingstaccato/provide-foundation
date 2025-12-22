@@ -229,18 +229,16 @@ async def wait_for_process_output(
                     last_exit_code = process.returncode
                     return await _handle_exited_process(process, buffer, expected_parts, last_exit_code)
         except TimeoutError:
-            try:
-                char_data = await process.read_char_async(timeout=read_timeout)
-            except TimeoutError:
-                char_data = ""
+            if _stdout_ready(process):
+                chunk = _read_stdout_chunk(process, buffer_size=1)
+                if chunk:
+                    buffer += chunk
+                    log.debug("Read output from process", chunk=chunk[:100])
+                    if _check_pattern_found(buffer, expected_parts):
+                        log.debug("Found expected pattern in buffer")
+                        return buffer
 
-            if char_data:
-                buffer += char_data
-                log.debug("Read output from process", chunk=char_data[:100])
-                if _check_pattern_found(buffer, expected_parts):
-                    log.debug("Found expected pattern in buffer")
-                    return buffer
-            elif not process.is_running():
+            if not process.is_running():
                 last_exit_code = process.returncode
                 return await _handle_exited_process(process, buffer, expected_parts, last_exit_code)
 
