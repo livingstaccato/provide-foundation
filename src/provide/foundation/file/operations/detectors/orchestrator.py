@@ -87,6 +87,11 @@ class OperationDetector:
             if operation:
                 operations.append(operation)
 
+        if not operations and len(sorted_events) > 1:
+            fallback = self._analyze_event_group(sorted_events)
+            if fallback:
+                return [fallback]
+
         return operations
 
     def detect_streaming(self, event: FileEvent) -> FileOperation | None:
