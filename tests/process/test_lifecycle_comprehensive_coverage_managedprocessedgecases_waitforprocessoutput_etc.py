@@ -74,8 +74,16 @@ class TestWaitForProcessOutput(FoundationTestCase):
         proc = ManagedProcess(
             [
                 sys.executable,
+                "-u",
                 "-c",
-                "import sys; print('start|middle|end', flush=True)",
+                """
+import sys
+import time
+
+for token in ["start", "middle", "end"]:
+    print(token, flush=True)
+    time.sleep(0.05)
+""",
             ],
             capture_output=True,
             text_mode=True,
@@ -215,6 +223,7 @@ class TestProcessLifecycleIntegration(FoundationTestCase):
         with ManagedProcess(
             [
                 sys.executable,
+                "-u",
                 "-c",
                 "import sys; print('ready', flush=True); import time; time.sleep(1)",
             ],
