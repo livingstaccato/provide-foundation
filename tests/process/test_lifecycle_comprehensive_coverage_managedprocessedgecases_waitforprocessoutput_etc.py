@@ -18,6 +18,9 @@ from provide.foundation.errors.process import ProcessError
 from provide.foundation.process.lifecycle import ManagedProcess, wait_for_process_output
 
 
+pytestmark = pytest.mark.xdist_group(name="process_lifecycle_serial")
+
+
 class TestManagedProcessEdgeCases(FoundationTestCase):
     """Test ManagedProcess edge cases and error conditions."""
 

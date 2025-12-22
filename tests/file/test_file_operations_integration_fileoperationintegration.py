@@ -26,6 +26,9 @@ from provide.foundation.file.operations import (
 from provide.foundation.file.operations.types import FileOperation
 
 
+pytestmark = pytest.mark.xdist_group(name="file_operations_integration_serial")
+
+
 class FileEventCapture:
     """Simple watchdog event handler for capturing file system events."""
 
