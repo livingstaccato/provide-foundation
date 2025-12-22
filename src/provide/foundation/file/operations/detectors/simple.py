@@ -79,8 +79,6 @@ class SimpleOperationDetector:
         event = events[0]
         if is_temp_file(event.path) and not is_backup_file(event.path):
             return None
-        if event.event_type == "created" and not is_backup_file(event.path):
-            return None
 
         # Map event types to operation types
         type_mapping = {
