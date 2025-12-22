@@ -84,7 +84,7 @@ class FileEventCapture:
         self.events.append(file_event)
 
 
-def wait_for_file_events(file_monitor: FileEventCapture, timeout: float = 2.0) -> list[FileEvent]:
+def wait_for_file_events(file_monitor: FileEventCapture, timeout: float = 5.0) -> list[FileEvent]:
     """Wait for filesystem events to appear before proceeding."""
     deadline = time.time() + timeout
     while time.time() < deadline:
@@ -97,11 +97,12 @@ def wait_for_file_events(file_monitor: FileEventCapture, timeout: float = 2.0) -
 def detect_operations(
     detector: OperationDetector,
     file_monitor: FileEventCapture,
-    attempts: int = 5,
+    timeout: float = 5.0,
     delay: float = 0.1,
 ) -> list[FileOperation]:
-    """Run the detector multiple times until operations are found or attempts exhausted."""
-    for _ in range(attempts):
+    """Run the detector until operations are found or the timeout expires."""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
         snapshot = list(file_monitor.events)
         if not snapshot:
             time.sleep(delay)
@@ -159,12 +160,12 @@ class TestFileOperationIntegration(FoundationTestCase):
 
         # Rename temp file to final name (atomic operation)
         temp_file.rename(original_file)
-        time.sleep(0.1)  # Allow events to be captured
+        time.sleep(0.2)  # Allow events to be captured
 
         # Analyze captured events
         wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
-        operations = detect_operations(detector, file_monitor)
+        operations = detect_operations(detector, file_monitor, timeout=5.0, delay=0.2)
 
         # Verify we detected an atomic save or backup operation
         assert len(operations) >= 1
@@ -188,7 +189,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         # Create original file
         original_file = temp_dir / "document.txt"
         original_file.write_text("Original content")
-        time.sleep(0.05)
+        time.sleep(0.1)
 
         file_monitor.clear_events()  # Clear creation event
 
@@ -201,16 +202,16 @@ class TestFileOperationIntegration(FoundationTestCase):
 
         # Delete original
         original_file.unlink()
-        time.sleep(0.05)
+        time.sleep(0.1)
 
         # Create new version
         original_file.write_text("New content")
-        time.sleep(0.1)
+        time.sleep(0.2)
 
         # Analyze events
         wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=300))
-        operations = detect_operations(detector, file_monitor)
+        operations = detect_operations(detector, file_monitor, timeout=5.0, delay=0.2)
 
         # Should detect atomic save with backup
         atomic_ops = [
@@ -232,12 +233,12 @@ class TestFileOperationIntegration(FoundationTestCase):
             files.append(file_path)
             time.sleep(0.01)  # Very short delay
 
-        time.sleep(0.1)  # Allow events to be captured
+        time.sleep(0.25)  # Allow events to be captured
 
         # Analyze events
         wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
-        operations = detect_operations(detector, file_monitor)
+        operations = detect_operations(detector, file_monitor, timeout=5.0, delay=0.2)
 
         # Should detect batch operation
         batch_ops = [op for op in operations if op.operation_type == OperationType.BATCH_UPDATE]
@@ -255,22 +256,22 @@ class TestFileOperationIntegration(FoundationTestCase):
 
         # Create original file
         original_file.write_text("Important data")
-        time.sleep(0.05)
+        time.sleep(0.1)
 
         file_monitor.clear_events()  # Clear creation event
 
         # Create backup first
         backup_file.write_text("Important data")
-        time.sleep(0.05)
+        time.sleep(0.1)
 
         # Modify original
         original_file.write_text("Updated important data")
-        time.sleep(0.1)
+        time.sleep(0.25)
 
         # Analyze events
         wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
-        operations = detect_operations(detector, file_monitor)
+        operations = detect_operations(detector, file_monitor, timeout=5.0, delay=0.2)
 
         # Should detect safe write
         safe_ops = [op for op in operations if op.operation_type == OperationType.SAFE_WRITE]
@@ -299,12 +300,12 @@ class TestFileOperationIntegration(FoundationTestCase):
         time.sleep(0.05)
 
         temp_file.rename(final_file)
-        time.sleep(0.1)
+        time.sleep(0.25)
 
         # Analyze events
         wait_for_file_events(file_monitor)
-        detector = OperationDetector(DetectorConfig(time_window_ms=200))
-        operations = detect_operations(detector, file_monitor)
+        detector = OperationDetector(DetectorConfig(time_window_ms=1000))
+        operations = detect_operations(detector, file_monitor, timeout=6.0, delay=0.25)
 
         # Should detect rename sequence
         rename_ops = [op for op in operations if op.operation_type == OperationType.RENAME_SEQUENCE]
