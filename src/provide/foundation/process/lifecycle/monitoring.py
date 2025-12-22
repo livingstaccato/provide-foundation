@@ -157,40 +157,12 @@ def _read_stdout_chunk(process: ManagedProcess, buffer_size: int) -> str:
     return chunk.decode("utf-8", errors="replace")
 
 
-async def _try_read_process_line(
-    process: ManagedProcess,
-    buffer: str,
-    expected_parts: list[str],
-    read_timeout: float,
-) -> tuple[str, bool]:
-    """Try to read available output from process. Returns (new_buffer, pattern_found)."""
-    if read_timeout <= 0:
-        return buffer, False
+def _start_stdout_read(process: ManagedProcess, loop: asyncio.AbstractEventLoop) -> asyncio.Future | None:
+    """Start a single background readline on stdout without cancellation."""
+    if not process._process or not process._process.stdout:
+        return None
 
-    try:
-        line = await process.read_line_async(timeout=read_timeout)
-        if line:
-            buffer += f"{line}\n"
-            log.debug("Read output from process", chunk=line[:100])
-
-            if _check_pattern_found(buffer, expected_parts):
-                log.debug("Found expected pattern in buffer")
-                return buffer, True
-            return buffer, False
-    except TimeoutError:
-        pass
-
-    try:
-        char = await process.read_char_async(timeout=min(0.05, read_timeout))
-        if char:
-            buffer += char
-            if _check_pattern_found(buffer, expected_parts):
-                log.debug("Found expected pattern in buffer")
-                return buffer, True
-    except TimeoutError:
-        pass
-
-    return buffer, False
+    return loop.run_in_executor(None, process._process.stdout.readline)
 
 
 async def wait_for_process_output(
@@ -222,6 +194,7 @@ async def wait_for_process_output(
     start_time = loop.time()
     buffer = ""
     last_exit_code = None
+    read_future: asyncio.Future | None = None
 
     log.debug(
         "⏳ Waiting for process output pattern",
@@ -236,14 +209,37 @@ async def wait_for_process_output(
             log.debug("Process exited", returncode=last_exit_code)
             return await _handle_exited_process(process, buffer, expected_parts, last_exit_code)
 
-        # Try to read line from running process
+        # Try to read line from running process without canceling reads
         remaining = timeout - (loop.time() - start_time)
         read_timeout = min(0.1, remaining)
-        buffer, pattern_found = await _try_read_process_line(
-            process, buffer, expected_parts, read_timeout
-        )
-        if pattern_found:
-            return buffer
+        if read_timeout <= 0:
+            break
+
+        if read_future is None:
+            read_future = _start_stdout_read(process, loop)
+
+        if read_future:
+            done, _ = await asyncio.wait({read_future}, timeout=read_timeout)
+            if done:
+                line_data = read_future.result()
+                read_future = None
+                if line_data:
+                    decoded = (
+                        line_data
+                        if isinstance(line_data, str)
+                        else line_data.decode("utf-8", errors="replace")
+                    )
+                    buffer += decoded
+                    log.debug("Read output from process", chunk=decoded[:100])
+                    if _check_pattern_found(buffer, expected_parts):
+                        log.debug("Found expected pattern in buffer")
+                        return buffer
+                else:
+                    if not process.is_running():
+                        last_exit_code = process.returncode
+                        return await _handle_exited_process(
+                            process, buffer, expected_parts, last_exit_code
+                        )
 
         # Short sleep to avoid busy loop
         await asyncio.sleep(0.01)
