@@ -85,10 +85,10 @@ import time
 
 for token in ["start", "middle", "end"]:
     print(token, flush=True)
-    time.sleep(0.5)
+    time.sleep(0.75)
 
 print("finished", flush=True)
-time.sleep(0.5)
+time.sleep(1.0)
 """,
             ],
             capture_output=True,
@@ -231,7 +231,7 @@ class TestProcessLifecycleIntegration(FoundationTestCase):
                 sys.executable,
                 "-u",
                 "-c",
-                "import sys; print('ready', flush=True); import time; time.sleep(3)",
+                "import sys; print('ready', flush=True); import time; time.sleep(4)",
             ],
             capture_output=True,
             text_mode=True,
