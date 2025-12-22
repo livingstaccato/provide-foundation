@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import asyncio
+import select
 
 from provide.foundation.errors.process import ProcessError
 from provide.foundation.logger import get_logger
@@ -117,11 +118,27 @@ async def _handle_exited_process(
     return buffer  # Should never reach here due to exceptions above
 
 
+def _stdout_ready(process: ManagedProcess) -> bool:
+    """Check if process stdout has data ready to read."""
+    if not process._process or not process._process.stdout:
+        return False
+
+    try:
+        ready, _, _ = select.select([process._process.stdout], [], [], 0)
+        return bool(ready)
+    except (OSError, ValueError, AttributeError):
+        # If readiness can't be determined, fall back to attempting a read.
+        return True
+
+
 async def _try_read_process_line(
     process: ManagedProcess, buffer: str, expected_parts: list[str]
 ) -> tuple[str, bool]:
     """Try to read a line from process. Returns (new_buffer, pattern_found)."""
     try:
+        if not _stdout_ready(process):
+            return buffer, False
+
         # Try to read a line with reasonable timeout for subprocess I/O
         # Note: Too short a timeout can miss data due to executor latency
         line = await process.read_line_async(timeout=0.5)
