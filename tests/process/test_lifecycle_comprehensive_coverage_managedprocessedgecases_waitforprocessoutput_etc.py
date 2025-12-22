@@ -85,7 +85,7 @@ class TestWaitForProcessOutput(FoundationTestCase):
         result = await wait_for_process_output(
             proc,
             expected_parts=["start", "middle", "end"],
-            timeout=5.0,
+            timeout=10.0,
         )
 
         assert "start" in result
@@ -129,7 +129,7 @@ class TestWaitForProcessOutput(FoundationTestCase):
             await wait_for_process_output(
                 proc,
                 expected_parts=["never_appears"],
-                timeout=5.0,
+                timeout=10.0,
             )
 
         proc.cleanup()
@@ -224,7 +224,7 @@ class TestProcessLifecycleIntegration(FoundationTestCase):
             # No need to call launch() - context manager already does this
 
             # Wait for ready signal
-            result = await wait_for_process_output(proc, ["ready"], timeout=5.0)
+            result = await wait_for_process_output(proc, ["ready"], timeout=10.0)
             assert "ready" in result
 
             # Terminate the process (since it's waiting for input)

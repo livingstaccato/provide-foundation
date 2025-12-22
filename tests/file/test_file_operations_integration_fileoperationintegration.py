@@ -83,6 +83,16 @@ class FileEventCapture:
         self.events.append(file_event)
 
 
+def wait_for_file_events(file_monitor: FileEventCapture, timeout: float = 2.0) -> list[FileEvent]:
+    """Wait for filesystem events to appear before proceeding."""
+    deadline = time.time() + timeout
+    while time.time() < deadline:
+        if file_monitor.events:
+            return file_monitor.events
+        time.sleep(0.05)
+    pytest.fail("No file system events were captured within the allotted time")
+
+
 @pytest.mark.serial
 class TestFileOperationIntegration(FoundationTestCase):
     """Integration tests using real filesystem operations.
@@ -132,6 +142,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         time.sleep(0.1)  # Allow events to be captured
 
         # Analyze captured events
+        wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
         operations = detector.detect(file_monitor.events)
 
@@ -177,6 +188,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         time.sleep(0.1)
 
         # Analyze events
+        wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=300))
         operations = detector.detect(file_monitor.events)
 
@@ -203,6 +215,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         time.sleep(0.1)  # Allow events to be captured
 
         # Analyze events
+        wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
         operations = detector.detect(file_monitor.events)
 
@@ -235,6 +248,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         time.sleep(0.1)
 
         # Analyze events
+        wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
         operations = detector.detect(file_monitor.events)
 
@@ -268,6 +282,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         time.sleep(0.1)
 
         # Analyze events
+        wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
         operations = detector.detect(file_monitor.events)
 
@@ -292,7 +307,8 @@ class TestFileOperationIntegration(FoundationTestCase):
         test_file.write_text("Much larger content that takes more space")
         time.sleep(0.1)
 
-        # Check that events have size information
+        # Ensure events were recorded before checking size data
+        wait_for_file_events(file_monitor)
         events_with_size = [e for e in file_monitor.events if e.metadata.size_after is not None]
         assert len(events_with_size) >= 1
 
@@ -312,6 +328,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         time.sleep(0.05)
 
         # Process events one by one in streaming fashion
+        wait_for_file_events(file_monitor)
         operations = []
         for event in file_monitor.events:
             result = detector.detect_streaming(event)
@@ -339,6 +356,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         time.sleep(0.15)  # Allow filesystem events to be captured
 
         # Ensure events were captured
+        wait_for_file_events(file_monitor)
         assert len(file_monitor.events) >= 1, "No events captured from file system"
 
         # Should be detected as separate operations
