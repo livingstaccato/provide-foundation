@@ -241,9 +241,7 @@ class OperationDetector:
 
         if best_operation and best_confidence >= self.config.min_confidence:
             # Validate that primary_path is not a temp file
-            if is_temp_file(best_operation.primary_path) and (
-                best_operation.operation_type != OperationType.BACKUP_CREATE
-            ):
+            if is_temp_file(best_operation.primary_path):
                 log.warning(
                     "Detector returned temp file as primary_path, attempting to fix",
                     temp_path=str(best_operation.primary_path),
@@ -251,7 +249,7 @@ class OperationDetector:
                 )
                 # Try to find the real file from the events
                 real_file = self._find_real_file_from_events(best_operation.events)
-                if real_file:
+                if real_file and not is_temp_file(real_file):
                     # Create a new operation with the corrected path
                     # (FileOperation is frozen, so we need attrs.evolve or recreate)
                     from attrs import evolve

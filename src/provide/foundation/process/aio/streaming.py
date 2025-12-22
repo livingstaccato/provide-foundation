@@ -93,7 +93,10 @@ async def read_lines_with_timeout(process: Any, timeout: float, cmd_str: str) ->
             if read_task in done:
                 wait_task.cancel()
                 await asyncio.gather(wait_task, return_exceptions=True)
-                line = read_task.result()
+                try:
+                    line = read_task.result()
+                except builtins.TimeoutError:
+                    raise
                 if not line:
                     break  # EOF
                 lines.append(line.decode(errors="replace").rstrip())
@@ -111,6 +114,8 @@ async def read_lines_with_timeout(process: Any, timeout: float, cmd_str: str) ->
     except builtins.TimeoutError as e:
         process.kill()
         await process.wait()
+        if getattr(process, "returncode", None) is None:
+            process.returncode = -9
         log.error("⏱️ Async stream timed out", command=cmd_str, timeout=timeout)
         raise ProcessTimeoutError(
             f"Command timed out after {timeout}s: {cmd_str}",
