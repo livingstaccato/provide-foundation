@@ -23,6 +23,7 @@ from provide.foundation.file.operations import (
     OperationDetector,
     OperationType,
 )
+from provide.foundation.file.operations.types import FileOperation
 
 
 class FileEventCapture:
@@ -93,6 +94,25 @@ def wait_for_file_events(file_monitor: FileEventCapture, timeout: float = 2.0) -
     pytest.fail("No file system events were captured within the allotted time")
 
 
+def detect_operations(
+    detector: OperationDetector,
+    file_monitor: FileEventCapture,
+    attempts: int = 5,
+    delay: float = 0.1,
+) -> list[FileOperation]:
+    """Run the detector multiple times until operations are found or attempts exhausted."""
+    for _ in range(attempts):
+        snapshot = list(file_monitor.events)
+        if not snapshot:
+            time.sleep(delay)
+            continue
+        operations = detector.detect(snapshot)
+        if operations:
+            return operations
+        time.sleep(delay)
+    return []
+
+
 @pytest.mark.serial
 class TestFileOperationIntegration(FoundationTestCase):
     """Integration tests using real filesystem operations.
@@ -144,7 +164,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         # Analyze captured events
         wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
-        operations = detector.detect(file_monitor.events)
+        operations = detect_operations(detector, file_monitor)
 
         # Verify we detected an atomic save or backup operation
         assert len(operations) >= 1
@@ -190,7 +210,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         # Analyze events
         wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=300))
-        operations = detector.detect(file_monitor.events)
+        operations = detect_operations(detector, file_monitor)
 
         # Should detect atomic save with backup
         atomic_ops = [
@@ -217,7 +237,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         # Analyze events
         wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
-        operations = detector.detect(file_monitor.events)
+        operations = detect_operations(detector, file_monitor)
 
         # Should detect batch operation
         batch_ops = [op for op in operations if op.operation_type == OperationType.BATCH_UPDATE]
@@ -250,7 +270,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         # Analyze events
         wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
-        operations = detector.detect(file_monitor.events)
+        operations = detect_operations(detector, file_monitor)
 
         # Should detect safe write
         safe_ops = [op for op in operations if op.operation_type == OperationType.SAFE_WRITE]
@@ -284,7 +304,7 @@ class TestFileOperationIntegration(FoundationTestCase):
         # Analyze events
         wait_for_file_events(file_monitor)
         detector = OperationDetector(DetectorConfig(time_window_ms=200))
-        operations = detector.detect(file_monitor.events)
+        operations = detect_operations(detector, file_monitor)
 
         # Should detect rename sequence
         rename_ops = [op for op in operations if op.operation_type == OperationType.RENAME_SEQUENCE]

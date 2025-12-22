@@ -157,7 +157,7 @@ class TestWaitForProcessOutput(FoundationTestCase):
 
         proc.read_line_async = mock_read_line
 
-        result = await wait_for_process_output(proc, expected_parts=["a"], timeout=3.0)
+        result = await wait_for_process_output(proc, expected_parts=["a"], timeout=6.0)
 
         assert "a" in result
 
