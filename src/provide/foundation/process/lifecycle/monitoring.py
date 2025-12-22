@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import asyncio
+import os
 import select
 
 from provide.foundation.errors.process import ProcessError
@@ -23,6 +24,17 @@ output patterns from managed processes.
 log = get_logger(__name__)
 
 
+def _stdout_fd(process: ManagedProcess) -> int | None:
+    """Get the stdout file descriptor if available."""
+    if not process._process or not process._process.stdout:
+        return None
+
+    try:
+        return process._process.stdout.fileno()
+    except (OSError, ValueError, AttributeError):
+        return None
+
+
 def _drain_remaining_output(process: ManagedProcess, buffer: str, buffer_size: int = 1024) -> str:
     """Drain any remaining output from process pipes."""
     if not process._process or not process._process.stdout:
@@ -37,14 +49,19 @@ def _drain_remaining_output(process: ManagedProcess, buffer: str, buffer_size: i
     except (OSError, ValueError, AttributeError, TimeoutError):
         pass
 
+    fd = _stdout_fd(process)
+    if fd is None:
+        return buffer
+
     try:
         while True:
-            if not _stdout_ready(process):
+            ready, _, _ = select.select([fd], [], [], 0)
+            if not ready:
                 break
-            chunk = _read_stdout_chunk(process, buffer_size)
+            chunk = os.read(fd, buffer_size)
             if not chunk:
                 break
-            buffer += chunk
+            buffer += chunk.decode("utf-8", errors="replace")
     except (OSError, ValueError):
         # OSError: stream/file read errors
         # ValueError: invalid stream state or decoding errors
@@ -108,13 +125,12 @@ async def _handle_exited_process(
 
 def _stdout_ready(process: ManagedProcess) -> bool:
     """Check if process stdout has data ready to read."""
-    if not process._process or not process._process.stdout:
+    fd = _stdout_fd(process)
+    if fd is None:
         return False
 
     try:
-        stdout = process._process.stdout
-        raw = stdout.buffer if hasattr(stdout, "buffer") else stdout
-        ready, _, _ = select.select([raw], [], [], 0)
+        ready, _, _ = select.select([fd], [], [], 0)
         return bool(ready)
     except (OSError, ValueError, AttributeError):
         # If readiness can't be determined, fall back to attempting a read.
@@ -126,13 +142,12 @@ def _read_stdout_chunk(process: ManagedProcess, buffer_size: int) -> str:
     if not process._process or not process._process.stdout:
         return ""
 
+    fd = _stdout_fd(process)
+    if fd is None:
+        return ""
+
     try:
-        stdout = process._process.stdout
-        raw = stdout.buffer if hasattr(stdout, "buffer") else stdout
-        if hasattr(raw, "read1"):
-            chunk = raw.read1(buffer_size)
-        else:
-            chunk = raw.read(buffer_size)
+        chunk = os.read(fd, buffer_size)
     except (OSError, ValueError, AttributeError, BlockingIOError):
         return ""
 
@@ -158,17 +173,6 @@ async def _try_read_process_line(
             if _check_pattern_found(buffer, expected_parts):
                 log.debug("Found expected pattern in buffer")
                 return buffer, True
-        else:
-            try:
-                char = await process.read_char_async(timeout=0.2)
-                if char:
-                    buffer += char
-                    log.debug("Read char from process", char=char)
-                    if _check_pattern_found(buffer, expected_parts):
-                        log.debug("Found expected pattern in buffer")
-                        return buffer, True
-            except TimeoutError:
-                pass
 
     except (ProcessLookupError, PermissionError, OSError):
         # ProcessLookupError: process already exited
