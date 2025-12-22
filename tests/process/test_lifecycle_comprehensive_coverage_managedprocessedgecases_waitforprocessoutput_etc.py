@@ -85,10 +85,10 @@ import time
 
 for token in ["start", "middle", "end"]:
     print(token, flush=True)
-    time.sleep(0.75)
+    time.sleep(0.3)
 
 print("finished", flush=True)
-time.sleep(1.0)
+time.sleep(0.5)
 """,
             ],
             capture_output=True,
