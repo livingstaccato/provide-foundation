@@ -7,7 +7,6 @@
 from __future__ import annotations
 
 import asyncio
-import os
 import select
 
 from provide.foundation.errors.process import ProcessError
@@ -30,20 +29,22 @@ def _drain_remaining_output(process: ManagedProcess, buffer: str, buffer_size: i
         return buffer
 
     try:
-        stdout = process._process.stdout
-        fd = stdout.fileno()
-    except (OSError, ValueError, AttributeError):
-        return buffer
+        if process._process.poll() is not None:
+            stdout_data, _ = process._process.communicate(timeout=1.0)
+            if stdout_data:
+                buffer += stdout_data if isinstance(stdout_data, str) else stdout_data.decode("utf-8", "replace")
+            return buffer
+    except (OSError, ValueError, AttributeError, TimeoutError):
+        pass
 
     try:
         while True:
-            ready, _, _ = select.select([stdout], [], [], 0)
-            if not ready:
+            if not _stdout_ready(process):
                 break
-            chunk = os.read(fd, buffer_size)
+            chunk = _read_stdout_chunk(process, buffer_size)
             if not chunk:
                 break
-            buffer += chunk.decode("utf-8", errors="replace")
+            buffer += chunk
     except (OSError, ValueError):
         # OSError: stream/file read errors
         # ValueError: invalid stream state or decoding errors
@@ -111,7 +112,9 @@ def _stdout_ready(process: ManagedProcess) -> bool:
         return False
 
     try:
-        ready, _, _ = select.select([process._process.stdout], [], [], 0)
+        stdout = process._process.stdout
+        raw = stdout.buffer if hasattr(stdout, "buffer") else stdout
+        ready, _, _ = select.select([raw], [], [], 0)
         return bool(ready)
     except (OSError, ValueError, AttributeError):
         # If readiness can't be determined, fall back to attempting a read.
@@ -124,8 +127,12 @@ def _read_stdout_chunk(process: ManagedProcess, buffer_size: int) -> str:
         return ""
 
     try:
-        fd = process._process.stdout.fileno()
-        chunk = os.read(fd, buffer_size)
+        stdout = process._process.stdout
+        raw = stdout.buffer if hasattr(stdout, "buffer") else stdout
+        if hasattr(raw, "read1"):
+            chunk = raw.read1(buffer_size)
+        else:
+            chunk = raw.read(buffer_size)
     except (OSError, ValueError, AttributeError, BlockingIOError):
         return ""
 
@@ -151,6 +158,17 @@ async def _try_read_process_line(
             if _check_pattern_found(buffer, expected_parts):
                 log.debug("Found expected pattern in buffer")
                 return buffer, True
+        else:
+            try:
+                char = await process.read_char_async(timeout=0.2)
+                if char:
+                    buffer += char
+                    log.debug("Read char from process", char=char)
+                    if _check_pattern_found(buffer, expected_parts):
+                        log.debug("Found expected pattern in buffer")
+                        return buffer, True
+            except TimeoutError:
+                pass
 
     except (ProcessLookupError, PermissionError, OSError):
         # ProcessLookupError: process already exited
