@@ -158,26 +158,36 @@ def _read_stdout_chunk(process: ManagedProcess, buffer_size: int) -> str:
 
 
 async def _try_read_process_line(
-    process: ManagedProcess, buffer: str, expected_parts: list[str], buffer_size: int
+    process: ManagedProcess,
+    buffer: str,
+    expected_parts: list[str],
+    read_timeout: float,
 ) -> tuple[str, bool]:
     """Try to read available output from process. Returns (new_buffer, pattern_found)."""
-    try:
-        if not _stdout_ready(process):
-            return buffer, False
+    if read_timeout <= 0:
+        return buffer, False
 
-        chunk = _read_stdout_chunk(process, buffer_size)
-        if chunk:
-            buffer += chunk
-            log.debug("Read output from process", chunk=chunk[:100])
+    try:
+        line = await process.read_line_async(timeout=read_timeout)
+        if line:
+            buffer += f"{line}\n"
+            log.debug("Read output from process", chunk=line[:100])
 
             if _check_pattern_found(buffer, expected_parts):
                 log.debug("Found expected pattern in buffer")
                 return buffer, True
+            return buffer, False
+    except TimeoutError:
+        pass
 
-    except (ProcessLookupError, PermissionError, OSError):
-        # ProcessLookupError: process already exited
-        # PermissionError: process inaccessible
-        # OSError: process stream/state errors
+    try:
+        char = await process.read_char_async(timeout=min(0.05, read_timeout))
+        if char:
+            buffer += char
+            if _check_pattern_found(buffer, expected_parts):
+                log.debug("Found expected pattern in buffer")
+                return buffer, True
+    except TimeoutError:
         pass
 
     return buffer, False
@@ -227,8 +237,10 @@ async def wait_for_process_output(
             return await _handle_exited_process(process, buffer, expected_parts, last_exit_code)
 
         # Try to read line from running process
+        remaining = timeout - (loop.time() - start_time)
+        read_timeout = min(0.1, remaining)
         buffer, pattern_found = await _try_read_process_line(
-            process, buffer, expected_parts, buffer_size
+            process, buffer, expected_parts, read_timeout
         )
         if pattern_found:
             return buffer
