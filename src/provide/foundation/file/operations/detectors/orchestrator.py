@@ -87,6 +87,12 @@ class OperationDetector:
             if operation:
                 operations.append(operation)
 
+        if len(sorted_events) > 1 and operations:
+            best_confidence = max(op.confidence for op in operations)
+            # Skip expensive fallback if we already found a high-confidence match.
+            if best_confidence >= 0.95:
+                return operations
+
         if len(sorted_events) > 1:
             fallback = self._analyze_event_group(sorted_events)
             if fallback:
