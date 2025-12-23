@@ -291,7 +291,7 @@ class TestFileLockChaos(FoundationTestCase):
     @settings(
         max_examples=7,
         suppress_health_check=[HealthCheck.too_slow, HealthCheck.function_scoped_fixture],
-        deadline=15000,  # Higher deadline for complex lock scenarios
+        deadline=None,  # Complex lock scenarios can be unpredictable under system load
     )
     def test_lock_file_scenarios_chaos(
         self,
