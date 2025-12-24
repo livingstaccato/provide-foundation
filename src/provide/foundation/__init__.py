@@ -108,6 +108,8 @@ __all__ = [
     # Resilience - Circuit Breaker (async)
     "AsyncCircuitBreaker",
     "BackoffStrategy",
+    # Archive module
+    "archive",
     # New foundation modules
     "CLIContext",
     "CircuitState",
