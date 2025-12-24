@@ -89,6 +89,26 @@ if pytest_asyncio:
             if isinstance(children, set):
                 children.clear()
 
+    @pytest_asyncio.fixture
+    async def clean_event_loop() -> AsyncGenerator[None, None]:
+        """Ensure pending tasks are cancelled without recursive cancellation."""
+        import asyncio
+
+        yield
+
+        loop = asyncio.get_running_loop()
+        current_task = asyncio.current_task()
+        pending = [t for t in asyncio.all_tasks(loop) if t is not current_task and not t.done()]
+
+        for task in pending:
+            children = getattr(task, "_children", None)
+            if isinstance(children, set):
+                children.clear()
+            task.cancel()
+
+        if pending:
+            await asyncio.gather(*pending, return_exceptions=True)
+
 
 @pytest.fixture(autouse=True, scope="function")
 def _intercept_event_loop_creation(request: pytest.FixtureRequest) -> Generator[None]:
