@@ -76,6 +76,26 @@ if not os.getenv("PYTEST_WORKER_ID"):  # Avoid multiple messages with xdist
 # Removed no_cover hook - not needed, issue is time_machine + asyncio, not coverage
 
 if pytest_asyncio:
+    @pytest.fixture(autouse=True, scope="session")
+    def _patch_asyncio_cancel_all_tasks() -> Generator[None, None, None]:
+        """Clear task child links before pytest-asyncio teardown."""
+        import asyncio
+        import asyncio.runners
+
+        original_cancel_all_tasks = asyncio.runners._cancel_all_tasks
+
+        def safe_cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
+            for task in asyncio.all_tasks(loop):
+                children = getattr(task, "_children", None)
+                if children is not None and hasattr(children, "clear"):
+                    children.clear()
+            original_cancel_all_tasks(loop)
+
+        asyncio.runners._cancel_all_tasks = safe_cancel_all_tasks
+        try:
+            yield
+        finally:
+            asyncio.runners._cancel_all_tasks = original_cancel_all_tasks
 
     @pytest_asyncio.fixture(autouse=True)
     async def _clear_asyncio_task_children() -> AsyncGenerator[None, None]:
