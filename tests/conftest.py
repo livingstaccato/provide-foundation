@@ -86,7 +86,7 @@ if pytest_asyncio:
 
         for task in asyncio.all_tasks():
             children = getattr(task, "_children", None)
-            if isinstance(children, set):
+            if children is not None and hasattr(children, "clear"):
                 children.clear()
 
     @pytest_asyncio.fixture
@@ -102,7 +102,7 @@ if pytest_asyncio:
 
         for task in pending:
             children = getattr(task, "_children", None)
-            if isinstance(children, set):
+            if children is not None and hasattr(children, "clear"):
                 children.clear()
             task.cancel()
 
