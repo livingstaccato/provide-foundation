@@ -13,17 +13,13 @@ Foundation reset automatically."""
 
 from __future__ import annotations
 
-from collections.abc import AsyncGenerator, Generator
+from collections.abc import Generator
 import logging as stdlib_logging
 import os
 import sys
 
 import provide.testkit  # noqa: F401 - Installs setproctitle blocker early
 import pytest
-try:
-    import pytest_asyncio
-except ImportError:  # pragma: no cover - pytest-asyncio is a test dependency
-    pytest_asyncio = None
 
 # Register plugins for assertion rewriting at the root level
 pytest_plugins = [
@@ -74,60 +70,6 @@ if not os.getenv("PYTEST_WORKER_ID"):  # Avoid multiple messages with xdist
     pass  # Placeholder for potential diagnostic logging
 
 # Removed no_cover hook - not needed, issue is time_machine + asyncio, not coverage
-
-if pytest_asyncio:
-    @pytest.fixture(autouse=True, scope="session")
-    def _patch_asyncio_cancel_all_tasks() -> Generator[None, None, None]:
-        """Clear task child links before pytest-asyncio teardown."""
-        import asyncio
-        import asyncio.runners
-
-        original_cancel_all_tasks = asyncio.runners._cancel_all_tasks
-
-        def safe_cancel_all_tasks(loop: asyncio.AbstractEventLoop) -> None:
-            for task in asyncio.all_tasks(loop):
-                children = getattr(task, "_children", None)
-                if children is not None and hasattr(children, "clear"):
-                    children.clear()
-            original_cancel_all_tasks(loop)
-
-        asyncio.runners._cancel_all_tasks = safe_cancel_all_tasks
-        try:
-            yield
-        finally:
-            asyncio.runners._cancel_all_tasks = original_cancel_all_tasks
-
-    @pytest_asyncio.fixture(autouse=True)
-    async def _clear_asyncio_task_children() -> AsyncGenerator[None, None]:
-        """Prevent recursive task cancellation during runner teardown."""
-        import asyncio
-
-        yield
-
-        for task in asyncio.all_tasks():
-            children = getattr(task, "_children", None)
-            if children is not None and hasattr(children, "clear"):
-                children.clear()
-
-    @pytest_asyncio.fixture
-    async def clean_event_loop() -> AsyncGenerator[None, None]:
-        """Ensure pending tasks are cancelled without recursive cancellation."""
-        import asyncio
-
-        yield
-
-        loop = asyncio.get_running_loop()
-        current_task = asyncio.current_task()
-        pending = [t for t in asyncio.all_tasks(loop) if t is not current_task and not t.done()]
-
-        for task in pending:
-            children = getattr(task, "_children", None)
-            if children is not None and hasattr(children, "clear"):
-                children.clear()
-            task.cancel()
-
-        if pending:
-            await asyncio.gather(*pending, return_exceptions=True)
 
 
 @pytest.fixture(autouse=True, scope="function")
@@ -236,15 +178,7 @@ def reset_foundation_for_all_tests(request: pytest.FixtureRequest) -> Generator[
     finally:
         # ALWAYS reset Foundation after each test, regardless of test type
         # This ensures clean state for the next test in the worker
-        skip_loop_reset = os.environ.get("PROVIDE_SKIP_EVENT_LOOP_RESET")
-        os.environ["PROVIDE_SKIP_EVENT_LOOP_RESET"] = "true"
-        try:
-            reset_foundation_setup_for_testing()
-        finally:
-            if skip_loop_reset is None:
-                os.environ.pop("PROVIDE_SKIP_EVENT_LOOP_RESET", None)
-            else:
-                os.environ["PROVIDE_SKIP_EVENT_LOOP_RESET"] = skip_loop_reset
+        reset_foundation_setup_for_testing()
 
         # If this test used time_machine, aggressively cleanup to prevent event loop corruption
         # This must happen IMMEDIATELY after test completes, before next test starts
