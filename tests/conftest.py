@@ -43,6 +43,19 @@ if "opentelemetry" not in sys.modules:
     mock_span.get_span_context.return_value = mock_span_context
     mock_span_context.is_valid = False  # Mark as invalid so trace context won't be extracted
 
+    # Create proper mock trace and span IDs that support formatting
+    class FormattableMock(MagicMock):
+        """Mock that supports format() operations."""
+        def __format__(self, format_spec):
+            if format_spec == "032x":
+                return "0" * 32
+            elif format_spec == "016x":
+                return "0" * 16
+            return str(self)
+
+    mock_span_context.trace_id = FormattableMock()
+    mock_span_context.span_id = FormattableMock()
+
     mock_trace.get_current_span.return_value = mock_span
     mock_opentelemetry.trace = mock_trace
 
