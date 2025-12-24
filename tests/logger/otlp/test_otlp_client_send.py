@@ -10,22 +10,9 @@ circuit breaker integration, and attribute handling."""
 
 from __future__ import annotations
 
-import sys
-from unittest.mock import MagicMock
-
 from provide.testkit.mocking import Mock, patch
 
 from provide.foundation.logger.otlp.client import OTLPLogClient
-
-
-# Mock opentelemetry module for tests when it's not available
-if "opentelemetry" not in sys.modules:
-    mock_opentelemetry = MagicMock()
-    mock_opentelemetry._logs = MagicMock()
-    mock_opentelemetry._logs.LogRecord = MagicMock()
-    mock_opentelemetry._logs.SeverityNumber = MagicMock()
-    sys.modules["opentelemetry"] = mock_opentelemetry
-    sys.modules["opentelemetry._logs"] = mock_opentelemetry._logs
 
 
 class TestSendLog:
