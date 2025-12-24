@@ -13,13 +13,17 @@ Foundation reset automatically."""
 
 from __future__ import annotations
 
-from collections.abc import Generator
+from collections.abc import AsyncGenerator, Generator
 import logging as stdlib_logging
 import os
 import sys
 
 import provide.testkit  # noqa: F401 - Installs setproctitle blocker early
 import pytest
+try:
+    import pytest_asyncio
+except ImportError:  # pragma: no cover - pytest-asyncio is a test dependency
+    pytest_asyncio = None
 
 # Register plugins for assertion rewriting at the root level
 pytest_plugins = [
@@ -70,6 +74,20 @@ if not os.getenv("PYTEST_WORKER_ID"):  # Avoid multiple messages with xdist
     pass  # Placeholder for potential diagnostic logging
 
 # Removed no_cover hook - not needed, issue is time_machine + asyncio, not coverage
+
+if pytest_asyncio:
+
+    @pytest_asyncio.fixture(autouse=True)
+    async def _clear_asyncio_task_children() -> AsyncGenerator[None, None]:
+        """Prevent recursive task cancellation during runner teardown."""
+        import asyncio
+
+        yield
+
+        for task in asyncio.all_tasks():
+            children = getattr(task, "_children", None)
+            if isinstance(children, set):
+                children.clear()
 
 
 @pytest.fixture(autouse=True, scope="function")
