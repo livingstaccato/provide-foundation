@@ -34,6 +34,8 @@ if "opentelemetry" not in sys.modules:
     mock_opentelemetry._logs.SeverityNumber = MagicMock()
 
     # Mock trace submodule for trace context extraction
+    from unittest.mock import AsyncMock
+
     mock_trace = MagicMock()
     mock_span = MagicMock()
     mock_span_context = MagicMock()
