@@ -6,7 +6,7 @@
 
 from __future__ import annotations
 
-from provide.foundation import config, errors, hub, platform, process, resilience, tracer
+from provide.foundation import archive, config, errors, hub, platform, process, resilience, tracer
 from provide.foundation.console import perr, pin, pout
 from provide.foundation.context import CLIContext
 from provide.foundation.errors import (
