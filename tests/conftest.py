@@ -76,41 +76,6 @@ if not os.getenv("PYTEST_WORKER_ID"):  # Avoid multiple messages with xdist
 # Removed no_cover hook - not needed, issue is time_machine + asyncio, not coverage
 
 if pytest_asyncio:
-    @pytest.fixture(autouse=True, scope="session")
-    def _patch_asyncio_task_cancel() -> Generator[None, None, None]:
-        """Avoid recursive cancellation errors in asyncio task trees."""
-        import asyncio
-
-        original_cancel = asyncio.Task.cancel
-
-        def safe_cancel(self: asyncio.Task[object], msg: str | None = None) -> bool:
-            stack = [self]
-            seen: set[asyncio.Task[object]] = set()
-            cancelled = False
-
-            while stack:
-                task = stack.pop()
-                if task in seen:
-                    continue
-                seen.add(task)
-
-                children = list(getattr(task, "_children", []))
-                if isinstance(getattr(task, "_children", None), set):
-                    task._children.clear()
-
-                if original_cancel(task, msg=msg):
-                    cancelled = True
-
-                stack.extend(children)
-
-            return cancelled
-
-        asyncio.Task.cancel = safe_cancel
-        try:
-            yield
-        finally:
-            asyncio.Task.cancel = original_cancel
-
 
     @pytest_asyncio.fixture(autouse=True)
     async def _clear_asyncio_task_children() -> AsyncGenerator[None, None]:
@@ -251,7 +216,15 @@ def reset_foundation_for_all_tests(request: pytest.FixtureRequest) -> Generator[
     finally:
         # ALWAYS reset Foundation after each test, regardless of test type
         # This ensures clean state for the next test in the worker
-        reset_foundation_setup_for_testing()
+        skip_loop_reset = os.environ.get("PROVIDE_SKIP_EVENT_LOOP_RESET")
+        os.environ["PROVIDE_SKIP_EVENT_LOOP_RESET"] = "true"
+        try:
+            reset_foundation_setup_for_testing()
+        finally:
+            if skip_loop_reset is None:
+                os.environ.pop("PROVIDE_SKIP_EVENT_LOOP_RESET", None)
+            else:
+                os.environ["PROVIDE_SKIP_EVENT_LOOP_RESET"] = skip_loop_reset
 
         # If this test used time_machine, aggressively cleanup to prevent event loop corruption
         # This must happen IMMEDIATELY after test completes, before next test starts

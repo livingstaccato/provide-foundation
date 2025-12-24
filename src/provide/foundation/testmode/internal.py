@@ -34,7 +34,11 @@ def reset_event_loops() -> None:
     new loop may cache frozen time.monotonic references.
     """
     try:
+        import os
         import asyncio
+
+        if os.getenv("PROVIDE_SKIP_EVENT_LOOP_RESET") == "true":
+            return
 
         # Close the current event loop if it's not running
         try:
