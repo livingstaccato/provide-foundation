@@ -46,10 +46,19 @@ if "opentelemetry" not in sys.modules:
     mock_trace.get_current_span.return_value = mock_span
     mock_opentelemetry.trace = mock_trace
 
+    # Mock SDK resources for resource creation
+    mock_sdk = MagicMock()
+    mock_resources = MagicMock()
+    mock_resources.Resource = MagicMock()
+    mock_sdk.resources = mock_resources
+    mock_opentelemetry.sdk = mock_sdk
+
     # Register all modules
     sys.modules["opentelemetry"] = mock_opentelemetry
     sys.modules["opentelemetry._logs"] = mock_opentelemetry._logs
     sys.modules["opentelemetry.trace"] = mock_trace
+    sys.modules["opentelemetry.sdk"] = mock_sdk
+    sys.modules["opentelemetry.sdk.resources"] = mock_resources
 
 # Register plugins for assertion rewriting at the root level
 pytest_plugins = [
