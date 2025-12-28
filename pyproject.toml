@@ -233,6 +233,13 @@ ignore = [
 "src/provide/foundation/tools/installer.py" = ["S202"]
 # Error types - AUTH_TOKEN_EXPIRED is not a password
 "src/provide/foundation/errors/types.py" = ["S105"]
+# Availability checks - F401 is intentional for "try: import X except ImportError" patterns
+"src/provide/foundation/utils/deps.py" = ["F401"]
+"src/provide/foundation/console/__init__.py" = ["F401"]
+"src/provide/foundation/cli/__init__.py" = ["F401"]
+"src/provide/foundation/logger/otlp/client.py" = ["F401"]
+"src/provide/foundation/observability/__init__.py" = ["F401"]
+"src/provide/foundation/logger/__init__.py" = ["F401"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["pyvider", "tests"]
