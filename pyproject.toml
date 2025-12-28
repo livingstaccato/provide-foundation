@@ -240,6 +240,15 @@ ignore = [
 "src/provide/foundation/logger/otlp/client.py" = ["F401"]
 "src/provide/foundation/observability/__init__.py" = ["F401"]
 "src/provide/foundation/logger/__init__.py" = ["F401"]
+"src/provide/foundation/crypto/certificates/trust.py" = ["F401"]
+"src/provide/foundation/file/formats.py" = ["F401"]
+"src/provide/foundation/hub/commands.py" = ["F401"]
+# Config classes - RUF009 is intentional for attrs field()/config_field() patterns
+"src/provide/foundation/context/core.py" = ["RUF009"]
+"src/provide/foundation/logger/config/logging.py" = ["RUF009"]
+"src/provide/foundation/logger/config/telemetry.py" = ["RUF009"]
+# Streams - file handle must stay open for logger lifetime
+"src/provide/foundation/streams/file.py" = ["SIM115"]
 
 [tool.ruff.lint.isort]
 known-first-party = ["pyvider", "tests"]
