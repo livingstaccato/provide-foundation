@@ -29,27 +29,28 @@ Thread-safe for concurrent access within a single process.
 # This prevents stdout pollution that breaks tools like uv
 log = get_system_logger(__name__)
 
-# DEBUG: Temporary logging to trace the issue
-import sys
-sys.stderr.write(f"[LOCK.PY DEBUG] Logger level: {log._logger.level}, Effective: {log._logger.getEffectiveLevel()}\n")
-sys.stderr.write(f"[LOCK.PY DEBUG] Handlers: {log._logger.handlers}\n")
-sys.stderr.flush()
-
 # Try to import psutil for PID recycling protection
+# Note: We defer logging the missing psutil until first actual use of FileLock
+# to avoid polluting stdout during module initialization (breaks tools like uv)
+_HAS_PSUTIL = False
+_PSUTIL_WARNING_LOGGED = False
 try:
     import psutil
 
     _HAS_PSUTIL = True
 except ImportError:
-    _HAS_PSUTIL = False
-    sys.stderr.write("[LOCK.PY DEBUG] About to call log.debug()...\n")
-    sys.stderr.flush()
-    log.debug(
-        "psutil not available, using basic PID validation",
-        hint="For PID recycling protection, install with: pip install provide-foundation[process]",
-    )
-    sys.stderr.write("[LOCK.PY DEBUG] log.debug() completed\n")
-    sys.stderr.flush()
+    pass
+
+
+def _log_psutil_warning_once() -> None:
+    """Log psutil unavailability warning once on first FileLock use."""
+    global _PSUTIL_WARNING_LOGGED
+    if not _HAS_PSUTIL and not _PSUTIL_WARNING_LOGGED:
+        _PSUTIL_WARNING_LOGGED = True
+        log.debug(
+            "psutil not available, using basic PID validation",
+            hint="For PID recycling protection, install with: pip install provide-foundation[process]",
+        )
 
 
 class FileLock:
@@ -83,6 +84,9 @@ class FileLock:
             check_interval: Seconds between lock checks
 
         """
+        # Log psutil warning once on first FileLock instantiation
+        _log_psutil_warning_once()
+
         self.path = Path(path)
         self.timeout = apply_timeout_factor(timeout)
         self.check_interval = check_interval
