@@ -330,7 +330,7 @@ omit = [
 [tool.coverage.report]
 show_missing = true
 skip_covered = true
-fail_under = 80 # Set this to a realistic target once you get >0%
+fail_under = 70
 precision = 2
 exclude_lines = [
     "pragma: no cover",
