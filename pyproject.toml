@@ -210,8 +210,8 @@ ignore = [
     "ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "ANN206",  # Type annotations
     "C901",      # Complexity
     "B017",      # pytest.raises(Exception)
-    "SIM117", "SIM105",  # Style preferences
-    "RUF012", "RUF009", "RUF043",  # Ruff-specific
+    "SIM105", "SIM108", "SIM117",  # Style preferences
+    "RUF009", "RUF012", "RUF022", "RUF043",  # Ruff-specific
     "UP007", "UP045",  # Pyupgrade
     "E402",      # Imports after code
     "D",         # No docstrings required in tests
