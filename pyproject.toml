@@ -182,6 +182,7 @@ select = [
 ]
 ignore = [
     "ANN401",   # any-type (too restrictive)
+    "BLE001",   # blind-except (too restrictive for cleanup patterns)
     "B008",     # function-call-in-default-argument (Click uses this pattern)
     "E501",     # line-too-long (handled by formatter)
     "S101",     # assert (valid in tests)
