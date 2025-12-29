@@ -29,6 +29,12 @@ Thread-safe for concurrent access within a single process.
 # This prevents stdout pollution that breaks tools like uv
 log = get_system_logger(__name__)
 
+# DEBUG: Temporary logging to trace the issue
+import sys
+sys.stderr.write(f"[LOCK.PY DEBUG] Logger level: {log._logger.level}, Effective: {log._logger.getEffectiveLevel()}\n")
+sys.stderr.write(f"[LOCK.PY DEBUG] Handlers: {log._logger.handlers}\n")
+sys.stderr.flush()
+
 # Try to import psutil for PID recycling protection
 try:
     import psutil
@@ -36,10 +42,14 @@ try:
     _HAS_PSUTIL = True
 except ImportError:
     _HAS_PSUTIL = False
+    sys.stderr.write("[LOCK.PY DEBUG] About to call log.debug()...\n")
+    sys.stderr.flush()
     log.debug(
         "psutil not available, using basic PID validation",
         hint="For PID recycling protection, install with: pip install provide-foundation[process]",
     )
+    sys.stderr.write("[LOCK.PY DEBUG] log.debug() completed\n")
+    sys.stderr.flush()
 
 
 class FileLock:
