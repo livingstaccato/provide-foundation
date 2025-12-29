@@ -184,6 +184,8 @@ ignore = [
     "ANN401",   # any-type (too restrictive)
     "BLE001",   # blind-except (too restrictive for cleanup patterns)
     "B008",     # function-call-in-default-argument (Click uses this pattern)
+    "D203",     # one-blank-line-before-class (conflicts with D211)
+    "D213",     # multi-line-summary-second-line (conflicts with D212)
     "E501",     # line-too-long (handled by formatter)
     "S101",     # assert (valid in tests)
     "S104",     # binding-to-all-interfaces (intentional for servers)
