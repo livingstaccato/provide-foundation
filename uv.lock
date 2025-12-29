@@ -2129,8 +2129,8 @@ protobuf = [
 
 [package.metadata]
 requires-dist = [
-    { name = "attrs", specifier = ">=25.3.0" },
-    { name = "click", marker = "extra == 'cli'", specifier = ">=8.1.8" },
+    { name = "attrs", specifier = ">=25.4.0" },
+    { name = "click", marker = "extra == 'cli'", specifier = ">=8.3.1" },
     { name = "cryptography", marker = "extra == 'crypto'", specifier = ">=45.0.7" },
     { name = "httpx", marker = "extra == 'transport'", specifier = ">=0.28.1" },
     { name = "opentelemetry-api", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
@@ -2139,13 +2139,13 @@ requires-dist = [
     { name = "opentelemetry-sdk", marker = "extra == 'opentelemetry'", specifier = ">=1.22.0" },
     { name = "provide-foundation", extras = ["cli", "compression", "crypto", "extended", "opentelemetry", "transport"], marker = "extra == 'all'" },
     { name = "provide-foundation", extras = ["platform", "process"], marker = "extra == 'extended'" },
-    { name = "psutil", marker = "extra == 'platform'", specifier = ">=3.3.11" },
-    { name = "psutil", marker = "extra == 'process'", specifier = ">=3.3.11" },
+    { name = "psutil", marker = "extra == 'platform'", specifier = ">=7.0.0" },
+    { name = "psutil", marker = "extra == 'process'", specifier = ">=7.0.0" },
     { name = "py-cpuinfo", marker = "extra == 'platform'", specifier = ">=9.0.0" },
-    { name = "setproctitle", marker = "extra == 'process'", specifier = ">=1.3.3" },
-    { name = "structlog", specifier = ">=25.3.0" },
-    { name = "tomli-w", specifier = ">=1.0.0" },
-    { name = "zstandard", marker = "extra == 'compression'", specifier = ">=0.22.0" },
+    { name = "setproctitle", marker = "extra == 'process'", specifier = ">=1.3.7" },
+    { name = "structlog", specifier = ">=25.5.0" },
+    { name = "tomli-w", specifier = ">=1.2.0" },
+    { name = "zstandard", marker = "extra == 'compression'", specifier = ">=0.25.0" },
 ]
 provides-extras = ["cli", "compression", "crypto", "transport", "opentelemetry", "platform", "process", "extended", "all"]
 
