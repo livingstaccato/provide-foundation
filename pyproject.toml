@@ -198,6 +198,7 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
+"tests/**" = ["S110", "S311", "PLR0124"]
 # Tests - No docstrings required, asserts OK, test data OK
 "tests/**/*.py" = [
     "ANN001", "ANN002", "ANN003", "ANN201", "ANN202", "ANN204", "ANN206",  # Type annotations
