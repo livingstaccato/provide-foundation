@@ -90,11 +90,27 @@ def reset_structlog_state() -> None:
     # Reset first to clear any cached loggers
     structlog.reset_defaults()
 
+    def _strip_foundation_context(
+        _logger: object,
+        _method_name: str,
+        event_dict: dict,
+    ) -> dict:
+        """Strip Foundation-specific bound context before rendering.
+
+        Foundation binds logger_name and other context that PrintLogger
+        doesn't accept as kwargs. This processor removes them.
+        """
+        # Remove Foundation-specific keys that shouldn't be passed to PrintLogger
+        event_dict.pop("logger_name", None)
+        event_dict.pop("_foundation_level_hint", None)
+        return event_dict
+
     # Reconfigure with BoundLogger which supports trace via Foundation's patching
     # Using PrintLoggerFactory with stdout for test safety (parallel test compat)
     structlog.configure(
         processors=[
             structlog.processors.TimeStamper(fmt="iso"),
+            _strip_foundation_context,
             structlog.dev.ConsoleRenderer(),
         ],
         wrapper_class=structlog.BoundLogger,
