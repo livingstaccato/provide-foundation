@@ -79,12 +79,29 @@ def reset_test_mode_cache() -> None:
 
 
 def reset_structlog_state() -> None:
-    """Reset structlog configuration to defaults.
+    """Reset structlog configuration to a test-safe state.
 
-    This is the most fundamental reset - it clears all structlog
-    configuration and returns it to an unconfigured state.
+    This resets structlog but configures it with a wrapper class that
+    supports the trace method. Using reset_defaults() alone would
+    result in BoundLoggerFilteringAtNotset which lacks trace().
     """
+    import sys
+
+    # Reset first to clear any cached loggers
     structlog.reset_defaults()
+
+    # Reconfigure with BoundLogger which supports trace via Foundation's patching
+    # Using PrintLoggerFactory with stdout for test safety (parallel test compat)
+    structlog.configure(
+        processors=[
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.dev.ConsoleRenderer(),
+        ],
+        wrapper_class=structlog.BoundLogger,
+        context_class=dict,
+        logger_factory=structlog.PrintLoggerFactory(file=sys.stdout),
+        cache_logger_on_first_use=False,  # Disable caching for test isolation
+    )
 
 
 def reset_logger_state() -> None:
