@@ -110,7 +110,9 @@ class EventBus:
                 self._cleanup_dead_references()
                 self._operation_count = 0
 
-    def _handle_handler_error(self, event: Event | RegistryEvent, handler: Callable[..., Any], error: Exception) -> None:
+    def _handle_handler_error(
+        self, event: Event | RegistryEvent, handler: Callable[..., Any], error: Exception
+    ) -> None:
         """Handle and log event handler errors.
 
         Args:

@@ -23,7 +23,9 @@ def _get_func_name(func: Callable[..., Any]) -> str:
     return getattr(func, "__name__", "<anonymous>")
 
 
-def _log_function_entry(logger: Any, func: Callable[..., Any], log_level: str, context: dict[str, Any]) -> None:
+def _log_function_entry(
+    logger: Any, func: Callable[..., Any], log_level: str, context: dict[str, Any]
+) -> None:
     """Log function entry if appropriate level."""
     if log_level in ("debug", "trace"):
         log_method = getattr(logger, log_level)
@@ -35,7 +37,9 @@ def _log_function_entry(logger: Any, func: Callable[..., Any], log_level: str, c
         )
 
 
-def _log_function_success(logger: Any, func: Callable[..., Any], log_level: str, context: dict[str, Any]) -> None:
+def _log_function_success(
+    logger: Any, func: Callable[..., Any], log_level: str, context: dict[str, Any]
+) -> None:
     """Log successful function completion."""
     log_method = getattr(logger, log_level, logger.debug)
     func_name = _get_func_name(func)
@@ -46,7 +50,9 @@ def _log_function_success(logger: Any, func: Callable[..., Any], log_level: str,
     )
 
 
-def _log_function_error(logger: Any, func: Callable[..., Any], error: Exception, context: dict[str, Any]) -> None:
+def _log_function_error(
+    logger: Any, func: Callable[..., Any], error: Exception, context: dict[str, Any]
+) -> None:
     """Log function error with context."""
     func_name = _get_func_name(func)
     logger.error(

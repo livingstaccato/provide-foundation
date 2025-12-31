@@ -70,7 +70,9 @@ def create_x509_certificate(
         san_list = [x509.DNSName(name) for name in (alt_names or []) if name]
         if san_list:
             # DNSName is a subtype of GeneralName, but mypy needs help understanding this
-            builder = builder.add_extension(x509.SubjectAlternativeName(cast(list[x509.GeneralName], san_list)), critical=False)
+            builder = builder.add_extension(
+                x509.SubjectAlternativeName(cast(list[x509.GeneralName], san_list)), critical=False
+            )
 
         builder = builder.add_extension(
             x509.BasicConstraints(ca=is_ca, path_length=None),
