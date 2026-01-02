@@ -13,23 +13,23 @@
 
 ## Quick Start
 1. Install: `pip install provide-foundation`
-2. Read the [Quick Start guide](docs/getting-started/quick-start.md).
-3. Explore runnable examples in [examples/README.md](examples/README.md).
+2. Read the [Quick Start guide](https://github.com/provide-io/provide-foundation/blob/main/docs/getting-started/quick-start.md).
+3. Explore runnable examples in [examples/README.md](https://github.com/provide-io/provide-foundation/blob/main/examples/README.md).
 
 ## Documentation
-- [Documentation index](docs/index.md)
-- [Getting started](docs/getting-started/index.md)
-- [Reference](docs/reference/index.md)
+- [Documentation index](https://github.com/provide-io/provide-foundation/blob/main/docs/index.md)
+- [Getting started](https://github.com/provide-io/provide-foundation/blob/main/docs/getting-started/index.md)
+- [Reference](https://github.com/provide-io/provide-foundation/blob/main/docs/reference/index.md)
 
 ## Development
-- See [CLAUDE.md](CLAUDE.md) for local development notes.
+- See [CLAUDE.md](https://github.com/provide-io/provide-foundation/blob/main/CLAUDE.md) for local development notes.
 - Tests live under `tests/` and `examples/`.
 
 ## Contributing
-See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+See [CONTRIBUTING.md](https://github.com/provide-io/provide-foundation/blob/main/CONTRIBUTING.md) for contribution guidelines.
 
 ## License
-See [LICENSE](LICENSE) for license details.
+See [LICENSE](https://github.com/provide-io/provide-foundation/blob/main/LICENSE) for license details.
 
 ## Quality Standards
 
@@ -121,3 +121,5 @@ provide.foundation is intentionally designed as a **foundation layer**, not a fu
 <p align="center">
   Built by <a href="https://provide.io">provide.io</a>
 </p>
+
+Copyright (c) Provide.io LLC.
