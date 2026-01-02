@@ -18,8 +18,8 @@ Foundation provides `provide-testkit`, a comprehensive testing toolkit that ensu
 Install testing dependencies:
 ```bash
 uv add provide-testkit
-uv tool install pytest
-uv tool install pytest-asyncio
+uv add pytest
+uv add pytest-asyncio
 ```
 
 ## Basic Test Setup
