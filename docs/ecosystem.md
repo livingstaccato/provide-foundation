@@ -523,7 +523,7 @@ Test Results
 | pyvider-components | v0.0.x | Alpha | 3.11+ | 1.0+ |
 | terraform-provider-pyvider | v0.0.x | Alpha POC | 3.11+ | 1.0+ |
 | pyvider-cty | v0.0.1026 | Alpha | 3.11+ | - |
-| pyvider-hcl | v0.0.1000 | Alpha | 3.11+ | - |
+| pyvider-hcl | v0.3.0 | Pre-release | 3.11+ | - |
 | pyvider-rpcplugin | v1.x.x | Production | 3.11+ | 1.0+ |
 | flavorpack | v0.2.0 | Alpha | 3.11+ | - |
 | plating | v0.0.1026 | Beta | 3.11+ | - |
