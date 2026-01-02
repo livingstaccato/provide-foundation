@@ -256,7 +256,7 @@ jobs:
           python-version: '3.12'
       - name: Install dependencies
         run: |
-          uv pip install uv
+          uv tool install uv
           uv sync --all-groups
       - name: Run full chaos tests
         run: |
