@@ -263,7 +263,6 @@ sudo yum install gcc libffi-devel python3-devel
 
 **Solution:** Use a fresh virtual environment or update conflicting packages:
 ```bash
-uv pip install --upgrade pip
 uv add provide-foundation[all] --upgrade
 ```
 
