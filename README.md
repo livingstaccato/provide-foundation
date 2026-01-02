@@ -6,6 +6,24 @@
 
 **provide.foundation** is a comprehensive foundation library for Python applications, offering structured logging, CLI utilities, configuration management, error handling, and essential application building blocks. Built with modern Python practices, it provides the core infrastructure that production applications need.
 
+## Key Features
+Key features are highlighted in the sections below and in the documentation.
+
+## Quick Start
+For a quick start, see [docs/index.md](docs/index.md).
+
+## Documentation
+Documentation lives in [docs/index.md](docs/index.md).
+
+## Development
+Development notes are in [CLAUDE.md](CLAUDE.md).
+
+## Contributing
+See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
+
+## License
+See [LICENSE](LICENSE) for license details.
+
 ## Quality Standards
 
 **provide.foundation** maintains high standards for code quality, testing, and reliability:
