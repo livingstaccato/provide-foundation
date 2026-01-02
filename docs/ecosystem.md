@@ -593,7 +593,7 @@ A: We recommend **uv** for faster dependency resolution. Both work:
 uv add pyvider
 
 # Also works
-pip install pyvider
+uv add pyvider
 ```
 
 **Q: Can I install from source?**
