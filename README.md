@@ -33,14 +33,13 @@ See [LICENSE](https://github.com/provide-io/provide-foundation/blob/main/LICENSE
 
 ## Quality Standards
 
-**provide.foundation** maintains high standards for code quality, testing, and reliability:
+**provide.foundation** focuses on code quality, testing, and reliability:
 
-- **High Test Coverage (>80%)** with 1000+ comprehensive tests
-- **Extensive 100% coverage** of core components and critical modules
-- **Comprehensive Security Testing** with path traversal, symlink validation, and input sanitization
-- **Performance Benchmarked** logging, transport, and archive operations
-- **Type-Safe Codebase** with comprehensive type annotations
-- **Automated Quality Checks** with ruff, mypy, and bandit
+- **Test Coverage** is tracked and enforced in CI.
+- **Security Checks** include path traversal and symlink validation tests.
+- **Performance Benchmarks** cover logging, transport, and archive operations.
+- **Type Checking** is enforced with `mypy`.
+- **Linting and Formatting** are enforced with `ruff`.
 
 ---
 
