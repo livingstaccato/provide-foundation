@@ -562,10 +562,9 @@ A: No. Projects are modular. Use only what you need:
 A: pyvider-components is an **example library** for learning. terraform-provider-pyvider is a **production provider** built using those components. Use components for learning; use provider for actual Terraform usage.
 
 **Q: Are these projects production-ready?**
-A: Status varies:
-- **Production:** pyvider-rpcplugin
-- **Beta:** provide-foundation, plating
-- **Alpha:** Most others (APIs may change)
+A: Status varies, but most packages are pre-release:
+- **Pre-release:** Most packages (APIs may change)
+- **Maturing:** pyvider-rpcplugin and provide-foundation (stable core, evolving surface area)
 
 ---
 
@@ -578,7 +577,7 @@ A: Yes. pyvider providers are standard Terraform providers. They work with any T
 A: No. pyvider is pure Python. No Go toolchain required.
 
 **Q: Can I package non-Python applications with flavorpack?**
-A: Currently, flavorpack focuses on Python applications. Other language support is planned.
+A: Currently, flavorpack focuses on Python applications. Other language support is exploratory and may change or be removed.
 
 **Q: What's the difference between provide-foundation and provide-foundry?**
 A: provide-foundation is the active core framework. provide-foundry may be a separate/older project. Use **provide-foundation**.
