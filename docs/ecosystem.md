@@ -111,7 +111,7 @@ Choose your journey based on your goals:
 ---
 
 #### terraform-provider-pyvider
-**Purpose:** Production-ready Terraform provider built with pyvider (POC)
+**Purpose:** Production-focused Terraform provider built with pyvider (POC)
 
 **Features:**
 - File operations resources
@@ -561,7 +561,7 @@ A: No. Projects are modular. Use only what you need:
 **Q: What's the relationship between pyvider-components and terraform-provider-pyvider?**
 A: pyvider-components is an **example library** for learning. terraform-provider-pyvider is a **production provider** built using those components. Use components for learning; use provider for actual Terraform usage.
 
-**Q: Are these projects production-ready?**
+**Q: Are these projects production-focused?**
 A: Status varies, but most packages are pre-release:
 - **Pre-release:** Most packages (APIs may change)
 - **Maturing:** pyvider-rpcplugin and provide-foundation (stable core, evolving surface area)
