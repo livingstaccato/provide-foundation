@@ -7,16 +7,23 @@
 **provide.foundation** is a comprehensive foundation library for Python applications, offering structured logging, CLI utilities, configuration management, error handling, and essential application building blocks. Built with modern Python practices, it provides the core infrastructure that production applications need.
 
 ## Key Features
-Key features are highlighted in the sections below and in the documentation.
+- Structured logging, error handling, and diagnostics for production apps.
+- CLI utilities and configuration helpers for consistent tooling.
+- Reusable building blocks for transport, tracing, and common workflows.
 
 ## Quick Start
-For a quick start, see [docs/index.md](docs/index.md).
+1. Install: `pip install provide-foundation`
+2. Read the [Quick Start guide](docs/getting-started/quick-start.md).
+3. Explore runnable examples in [examples/README.md](examples/README.md).
 
 ## Documentation
-Documentation lives in [docs/index.md](docs/index.md).
+- [Documentation index](docs/index.md)
+- [Getting started](docs/getting-started/index.md)
+- [Reference](docs/reference/index.md)
 
 ## Development
-Development notes are in [CLAUDE.md](CLAUDE.md).
+- See [CLAUDE.md](CLAUDE.md) for local development notes.
+- Tests live under `tests/` and `examples/`.
 
 ## Contributing
 See [CONTRIBUTING.md](CONTRIBUTING.md) for contribution guidelines.
