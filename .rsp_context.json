@@ -1,8 +1,10 @@
 {
-  "session_id": "UdLvFsvnSjgQmYmeXrpQtx",
-  "room_code": "7-stingrays-3-starfish-4-hippos",
-  "player_id": "ZLkVqhcqUiMnQXpfFkWbRM",
-  "saved_at": "/Users/tim/code/gh/provide-io/provide-foundation",
-  "host": "localhost",
-  "port": 1337
+  "session_id": "mArRKpn6RHET45r975wWKV",
+  "room_code": "7-mangos-4-robots-6-pumpkins",
+  "player_id": "PwBxJmY2NR3x3h4RinwJab",
+  "saved_at": "/Users/tim/code/gh/livingstaccato/responsum",
+  "host": "responsum.neurotic.workers.dev",
+  "port": 443,
+  "player_token": "2hDjvf43eZ9_iSapsmLd0fLH4EbpWhT2AcaeAn7MvHg",
+  "secure": true
 }
