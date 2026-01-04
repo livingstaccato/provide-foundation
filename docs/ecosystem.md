@@ -643,7 +643,7 @@ uv sync
 - Enterprise features
 - Advanced capabilities system
 
-See individual project roadmaps for current status; priorities may change or be removed.
+See individual project documentation for current status; priorities may change or be removed.
 
 ---
 
