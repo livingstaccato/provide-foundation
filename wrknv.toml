@@ -35,7 +35,7 @@ all = [
 ]
 
 [tasks.pkg]
-install = "uv sync"
+install = "uv pip install -e ."
 lock = "uv lock"
 uninstall = "uv pip uninstall -y $(grep '^name = ' pyproject.toml | cut -d'\"' -f2)"
 version = "cat VERSION 2>/dev/null || grep '^version = ' pyproject.toml | cut -d'\"' -f2"
