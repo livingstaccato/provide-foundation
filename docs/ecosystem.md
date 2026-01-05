@@ -120,7 +120,7 @@ Choose your journey based on your goals:
 - Data transformation functions
 - Complete working examples
 
-**Status:** Alpha POC (proof of concept)
+**Status:** Pre-release
 **When to use:** Testing pyvider concepts, learning provider usage
 **Documentation:** [terraform-provider-pyvider docs](../terraform-provider-pyvider/)
 
