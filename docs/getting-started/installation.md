@@ -151,7 +151,7 @@ source .venv/bin/activate  # macOS/Linux
 # or: .venv\Scripts\activate  # Windows
 
 # Install Foundation
-uv uv add provide-foundation[all]
+uv add provide-foundation[all]
 ```
 
 ## Verify Installation
