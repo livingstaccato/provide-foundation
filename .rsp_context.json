@@ -1,10 +1,10 @@
 {
-  "session_id": "XX9xF_qATRG_Jbz2Sgj3QQ",
-  "room_code": "DVSJ-SMZ4",
-  "player_id": "6c2zJ9GbneRnwFr7vsEEmH",
-  "player_token": "pAdTADnPGLTM9QtYF2HD-hVd98FgE3B1rXDK9xnYzQM",
-  "saved_at": "/Users/tim/code/gh/livingstaccato/responsum",
-  "host": "responsum.neurotic.workers.dev",
-  "port": 443,
-  "secure": true
+  "session_id": "lE7Kk5PyX-HGGce_Nr0ptw",
+  "room_code": "GX7V-HWMY",
+  "player_id": "mMwXWan3C8kuHiuR6BcKg4",
+  "player_token": "Eh1huHH0PlOvK3gNgUlcBHfD9L1EZtKTspn4LJJDFnQ",
+  "saved_at": "/Users/tim/code/gh/provide-io/provide-foundation",
+  "host": "localhost",
+  "port": 8787,
+  "secure": false
 }
