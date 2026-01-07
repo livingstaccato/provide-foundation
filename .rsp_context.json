@@ -1,8 +1,10 @@
 {
-  "session_id": "UdLvFsvnSjgQmYmeXrpQtx",
-  "room_code": "7-stingrays-3-starfish-4-hippos",
-  "player_id": "ZLkVqhcqUiMnQXpfFkWbRM",
+  "session_id": "AXoFed_Rn8vQxCmWBwgwQQ",
+  "room_code": "RBCB-Q32S",
+  "player_id": "TJD9qgmQuacC2pkMXYwXNH",
+  "player_token": "9lmskfhKMXv9RvKTHabM4mUGyKbT6hU-hGnk9B6WnUc",
   "saved_at": "/Users/tim/code/gh/provide-io/provide-foundation",
   "host": "localhost",
-  "port": 1337
+  "port": 8787,
+  "secure": false
 }
